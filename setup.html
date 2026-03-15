@@ -1,14 +1,79 @@
-// Contoh Logik Setup Wizard (setup.js)
-async function saveConfig() {
-    const config = {
-        apiKey: document.getElementById('api-key').value,
-        authDomain: document.getElementById('auth-domain').value,
-        projectId: document.getElementById('project-id').value,
-        storageBucket: document.getElementById('storage-bucket').value
-    };
-    
-    // Simpan ke LocalStorage untuk rujukan sistem
-    localStorage.setItem('ketick_config', JSON.stringify(config));
-    alert("Konfigurasi berjaya! Sistem sedia digunakan.");
-    window.location.href = 'index.html';
-}
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Wizard | KETICK OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F2F2f7; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+
+    <div class="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 border border-gray-100">
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200">
+            <i class="fas fa-cloud-bolt text-white text-2xl"></i>
+        </div>
+        
+        <h2 class="text-3xl font-black tracking-tighter mb-2">Konfigurasi Cloud</h2>
+        <p class="text-sm text-gray-400 font-medium mb-8 leading-relaxed">
+            Sila masukkan API Key dari <b>Firebase Console</b> untuk mengaktifkan fungsi simpanan awan (Cloud Sync).
+        </p>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Firebase API Key</label>
+                <input type="text" id="api-key" placeholder="AIzaSy..." class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Project ID</label>
+                    <input type="text" id="project-id" placeholder="ketick-os-xxx" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Auth Domain</label>
+                    <input type="text" id="auth-domain" placeholder="xxx.firebaseapp.com" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Storage Bucket</label>
+                <input type="text" id="storage-bucket" placeholder="xxx.appspot.com" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+        </div>
+
+        <button onclick="saveConfig()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-[24px] font-bold text-lg mt-8 shadow-xl shadow-blue-100 transition-all active:scale-95">
+            AKTIFKAN SISTEM <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+        
+        <p class="text-center mt-6 text-[10px] text-gray-300 font-bold uppercase tracking-widest">Ketick OS v1.0 • Flux Edition</p>
+    </div>
+
+    <script>
+        async function saveConfig() {
+            const config = {
+                apiKey: document.getElementById('api-key').value,
+                authDomain: document.getElementById('auth-domain').value,
+                projectId: document.getElementById('project-id').value,
+                storageBucket: document.getElementById('storage-bucket').value
+            };
+
+            // Validasi ringkas
+            if(!config.apiKey || !config.projectId) {
+                alert("Sila isi sekurang-kurangnya API Key dan Project ID.");
+                return;
+            }
+            
+            // Simpan ke LocalStorage
+            localStorage.setItem('ketick_config', JSON.stringify(config));
+            
+            alert("Konfigurasi disimpan! Sistem akan diaktifkan.");
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
