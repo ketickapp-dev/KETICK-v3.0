@@ -15,3 +15,18 @@
 │   └── billing.html
 ├── index.html       (Main Shell / Dashboard)
 └── setup.html       (Setup Wizard untuk API)
+
+Cara Guna Dalam Fail main.js atau Modul Lain
+​Anda hanya perlu import fungsi globalSave ini setiap kali ada perubahan data. Contohnya dalam fungsi tambah stok:
+import { globalSave } from './database.js';
+
+function addInventoryItem() {
+    db.inv.push({ id: Date.now(), name: 'Produk Baru', jual: 0 });
+    
+    // Gantikan save() lama dengan globalSave
+    globalSave({ inv: db.inv }); 
+    
+    renderInventory();
+}
+
+
