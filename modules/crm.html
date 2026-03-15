@@ -1,0 +1,50 @@
+<section id="crm-section" class="section-animate">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-black tracking-tight">CRM Database</h2>
+            <p class="text-gray-500 text-sm font-medium">Urus maklumat pelanggan & sejarah interaksi.</p>
+        </div>
+        <button onclick="openCrmModal()" class="bg-black text-white px-6 py-3 rounded-2xl font-bold shadow-xl active:scale-95 transition-all">
+            + Pelanggan Baru
+        </button>
+    </div>
+
+    <div class="mb-6 relative">
+        <i class="fas fa-search absolute left-5 top-4 text-gray-400"></i>
+        <input type="text" id="crm-search" oninput="searchClient()" placeholder="Cari nama atau nombor telefon..." class="w-full p-4 pl-14 bg-white border-none rounded-[20px] shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <div class="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50/50 border-b border-gray-100">
+                <tr class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
+                    <th class="p-6">Maklumat Pelanggan</th>
+                    <th class="p-6">Kategori</th>
+                    <th class="p-6">Status</th>
+                    <th class="p-6 text-right">Tindakan</th>
+                </tr>
+            </thead>
+            <tbody id="crm-table-body">
+                </tbody>
+        </table>
+    </div>
+</section>
+
+<div id="crm-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl">
+        <h3 class="text-2xl font-black mb-6">Tambah Pelanggan</h3>
+        <div class="space-y-4">
+            <input type="text" id="cli-name" placeholder="Nama Penuh" class="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none font-semibold">
+            <input type="number" id="cli-phone" placeholder="No. Telefon (601...)" class="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none font-semibold">
+            <select id="cli-cat" class="w-full p-4 bg-gray-50 rounded-2xl outline-none border-none font-semibold text-gray-500">
+                <option value="Personal">Personal</option>
+                <option value="Corporate">Corporate</option>
+                <option value="VIP">VIP</option>
+            </select>
+        </div>
+        <div class="flex gap-4 mt-8">
+            <button onclick="closeCrmModal()" class="flex-1 p-4 text-gray-400 font-bold">Batal</button>
+            <button onclick="saveNewClient()" class="flex-1 bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-100">Simpan</button>
+        </div>
+    </div>
+</div>
