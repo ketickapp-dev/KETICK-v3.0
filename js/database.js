@@ -6,7 +6,6 @@ const config = JSON.parse(localStorage.getItem('ketick_config'));
 
 if (!config) {
     console.warn("Konfigurasi Firebase tidak dijumpai. Sila jalankan setup.html");
-    // Jika tiada config, halakan pengguna ke setup
     if (window.location.pathname.includes('index.html')) {
         window.location.href = 'setup.html';
     }
@@ -16,24 +15,30 @@ if (!config) {
 const app = initializeApp(config);
 const db = getFirestore(app);
 
-// Guna ID unik peranti jika belum ada Auth
+/**
+ * Mendapatkan UID pengguna yang sedang login
+ */
 const getClientId = () => {
-    let id = localStorage.getItem('ketick_device_id');
-    if (!id) {
-        id = 'device_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('ketick_device_id', id);
+    const uid = localStorage.getItem('ketick_uid');
+    if (!uid) {
+        // Jika tiada UID, bermakna belum login
+        if (!window.location.pathname.includes('login.html') && !window.location.pathname.includes('setup.html')) {
+            window.location.href = 'login.html';
+        }
+        return null;
     }
-    return id;
+    return uid;
 };
 
 /**
  * Fungsi Sinkronisasi ke Cloud
- * @param {string} collectionName - Nama kategori (inv, cli, hist, dsb)
- * @param {object} data - Data yang hendak disimpan
  */
 export async function syncToCloud(collectionName, data) {
+    const uid = getClientId();
+    if (!uid) return;
+
     try {
-        const docRef = doc(db, collectionName, getClientId());
+        const docRef = doc(db, collectionName, uid);
         await setDoc(docRef, { 
             payload: data,
             lastUpdated: new Date().toISOString()
@@ -45,12 +50,14 @@ export async function syncToCloud(collectionName, data) {
 }
 
 /**
- * Fungsi Ambil Data dari Cloud (Masa Pertama Kali Load)
- * @param {string} collectionName 
+ * Fungsi Ambil Data dari Cloud
  */
 export async function fetchFromCloud(collectionName) {
+    const uid = getClientId();
+    if (!uid) return null;
+
     try {
-        const docRef = doc(db, collectionName, getClientId());
+        const docRef = doc(db, collectionName, uid);
         const docSnap = await getDoc(docRef);
         
         if (docSnap.exists()) {
@@ -64,15 +71,13 @@ export async function fetchFromCloud(collectionName) {
 }
 
 /**
- * Global Save & Sync
- * Gantikan fungsi save() lama anda dengan ini
+ * Global Save & Sync (Sesuai untuk Mobile/Acode)
  */
 export function globalSave(dataObject) {
-    // 1. Simpan ke LocalStorage (Offline First)
     Object.keys(dataObject).forEach(key => {
+        // Simpan Offline
         localStorage.setItem(`f6_${key}`, JSON.stringify(dataObject[key]));
-        
-        // 2. Sync ke Firebase (Background)
+        // Simpan Online
         syncToCloud(key, dataObject[key]);
     });
 }
