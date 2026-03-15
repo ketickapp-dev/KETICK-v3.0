@@ -1,0 +1,14 @@
+// Contoh Logik Setup Wizard (setup.js)
+async function saveConfig() {
+    const config = {
+        apiKey: document.getElementById('api-key').value,
+        authDomain: document.getElementById('auth-domain').value,
+        projectId: document.getElementById('project-id').value,
+        storageBucket: document.getElementById('storage-bucket').value
+    };
+    
+    // Simpan ke LocalStorage untuk rujukan sistem
+    localStorage.setItem('ketick_config', JSON.stringify(config));
+    alert("Konfigurasi berjaya! Sistem sedia digunakan.");
+    window.location.href = 'index.html';
+}
