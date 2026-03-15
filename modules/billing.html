@@ -1,0 +1,83 @@
+<section id="billing-section" class="section-animate">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-black tracking-tight text-gray-800">Sistem Billing</h2>
+            <p class="text-gray-500 text-sm font-medium">Jana invois dan urus rekod bayaran.</p>
+        </div>
+        <button onclick="openBillingModal()" class="bg-blue-600 text-white px-8 py-4 rounded-[24px] font-bold shadow-xl shadow-blue-100 active:scale-95 transition-all">
+            + Invois Baru
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Kutipan</p>
+            <h3 id="bill-total-paid" class="text-2xl font-black text-emerald-500">RM 0.00</h3>
+        </div>
+        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Belum Bayar</p>
+            <h3 id="bill-total-pending" class="text-2xl font-black text-orange-500">RM 0.00</h3>
+        </div>
+        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm">
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Invois Aktif</p>
+            <h3 id="bill-count" class="text-2xl font-black text-gray-800">0</h3>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-50">
+            <h4 class="font-bold text-gray-800">Sejarah Invois Terkini</h4>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50/50">
+                    <tr class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
+                        <th class="p-6 text-center">No. Inv</th>
+                        <th class="p-6">Pelanggan</th>
+                        <th class="p-6">Tarikh</th>
+                        <th class="p-6">Jumlah (RM)</th>
+                        <th class="p-6">Status</th>
+                        <th class="p-6 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="billing-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div id="billing-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-[45px] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h3 class="text-2xl font-black mb-8">Jana Invois Baru</h3>
+        
+        <div class="space-y-5">
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Pilih Pelanggan</label>
+                <select id="bill-client-select" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
+                    </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Kuantiti</label>
+                    <input type="number" id="bill-qty" value="1" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Harga Unit (RM)</label>
+                    <input type="number" id="bill-price" placeholder="0.00" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Keterangan Produk/Servis</label>
+                <textarea id="bill-desc" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-semibold h-24 border-none" placeholder="Contoh: Servis KETICK OS - Flux Edition"></textarea>
+            </div>
+        </div>
+
+        <div class="flex gap-4 mt-10">
+            <button onclick="closeBillingModal()" class="flex-1 p-4 text-gray-400 font-bold hover:text-gray-600 transition">Batal</button>
+            <button onclick="saveInvoice()" class="flex-1 bg-black text-white p-5 rounded-[24px] font-bold shadow-xl active:scale-95 transition-all">SIMPAN INVOIS</button>
+        </div>
+    </div>
+</div>
