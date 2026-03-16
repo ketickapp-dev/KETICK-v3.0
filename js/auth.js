@@ -8,9 +8,15 @@ import {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 
 // Ambil config dari LocalStorage (Setup Wizard)
-const config = JSON.parse(localStorage.getItem('ketick_config'));
-const app = initializeApp(config);
-const auth = getAuth(app);
+const configData = JSON.parse(localStorage.getItem('ketick_config'));
+
+let auth;
+
+// Pastikan app hanya di-initialize jika config wujud
+if (configData) {
+    const app = initializeApp(configData);
+    auth = getAuth(app);
+}
 
 /**
  * Pendaftaran Pengguna Baru
@@ -38,9 +44,16 @@ export async function loginUser(email, password) {
 }
 
 /**
- * Pantau Status Login (Guna di index.html)
+ * Pantau Status Login & Konfigurasi (Guna di index.html)
  */
 export function checkAuthStatus() {
+    // 1. Jika config tiada, hantar ke Setup
+    if (!configData) {
+        window.location.href = 'setup.html';
+        return;
+    }
+
+    // 2. Pantau sesi Firebase
     onAuthStateChanged(auth, (user) => {
         if (!user) {
             // Jika tidak login, tendang ke login.html
@@ -48,8 +61,9 @@ export function checkAuthStatus() {
                 window.location.href = 'login.html';
             }
         } else {
-            // Simpan UID untuk kegunaan sync data
+            // Simpan UID untuk kegunaan database sync
             localStorage.setItem('ketick_uid', user.uid);
+            console.log("Sesi Aktif:", user.email);
         }
     });
 }
@@ -58,7 +72,11 @@ export function checkAuthStatus() {
  * Log Keluar
  */
 export async function logoutUser() {
-    await signOut(auth);
-    localStorage.removeItem('ketick_uid');
-    window.location.href = 'login.html';
+    try {
+        await signOut(auth);
+        localStorage.removeItem('ketick_uid');
+        window.location.href = 'login.html';
+    } catch (error) {
+        console.error("Gagal Logout:", error);
+    }
 }
