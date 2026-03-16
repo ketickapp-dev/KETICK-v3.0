@@ -1,0 +1,34 @@
+<section id="coupon-section" class="section-animate">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-black tracking-tight text-gray-800">Coupon Manager</h2>
+            <p class="text-gray-500 text-sm font-medium">Urus kod promosi dan diskaun jualan.</p>
+        </div>
+        <button onclick="openCouponModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-all">
+            <i class="fas fa-plus-circle mr-2"></i> Kupon Baru
+        </button>
+    </div>
+
+    <div id="coupon-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        </div>
+</section>
+
+<div id="coupon-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl">
+        <h3 class="text-2xl font-black mb-6">Cipta Kupon</h3>
+        <div class="space-y-4">
+            <input type="text" id="cp-code" placeholder="KOD KUPON (cth: SAVE10)" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold uppercase">
+            <div class="flex gap-4">
+                <input type="number" id="cp-value" placeholder="Nilai" class="flex-1 p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold">
+                <select id="cp-type" class="p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold">
+                    <option value="RM">RM</option>
+                    <option value="%">% Diskaun</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-4 mt-8">
+            <button onclick="closeCouponModal()" class="flex-1 p-4 text-gray-400 font-bold">Batal</button>
+            <button onclick="saveCoupon()" class="flex-1 bg-indigo-600 text-white p-4 rounded-2xl font-bold">SIMPAN</button>
+        </div>
+    </div>
+</div>
