@@ -9,7 +9,15 @@
     <link rel="stylesheet" href="css/styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow-x: hidden;
+        }
+        
+        /* Smooth transition untuk loading modul */
+        #module-viewport {
+            transition: all 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="flex min-h-screen bg-[#F2F2f7]">
@@ -17,26 +25,16 @@
     <aside id="sidebar-container" class="z-40"></aside>
 
     <main class="flex-1 p-4 md:p-8 overflow-y-auto" id="main-content">
-        <div id="loader" class="hidden fixed top-5 right-5 bg-white px-4 py-2 rounded-full shadow-lg z-[100]">
-            <p class="text-[10px] font-bold text-blue-600"><i class="fas fa-sync fa-spin mr-2"></i> LOADING...</p>
+        <div id="loader" class="hidden fixed top-5 right-5 bg-white px-4 py-2 rounded-full shadow-lg z-[100] border border-blue-50">
+            <p class="text-[10px] font-bold text-blue-600 flex items-center">
+                <i class="fas fa-sync fa-spin mr-2"></i> KETICK OS LOADING...
+            </p>
         </div>
 
-        <div id="module-viewport" class="max-w-7xl mx-auto transition-all duration-300">
+        <div id="module-viewport" class="max-w-7xl mx-auto opacity-100">
             </div>
     </main>
 
-    <script type="module">
-        import { checkAuthStatus } from './js/auth.js';
-        
-        // 1. Semak konfigurasi API & Status Login
-        const config = localStorage.getItem('ketick_config');
-        if (!config) {
-            window.location.href = 'setup.html';
-        } else {
-            checkAuthStatus();
-        }
-    </script>
-    
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
