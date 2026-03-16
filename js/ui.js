@@ -5,20 +5,21 @@ const menuItems = [
     { id: 'inventory', label: 'Inventory', icon: 'fa-th-large', color: 'text-gray-500' },
     { id: 'crm', label: 'CRM Database', icon: 'fa-user-friends', color: 'text-gray-500' },
     { id: 'billing', label: 'Billing', icon: 'fa-receipt', color: 'text-gray-500' },
-    { id: 'lhdn', label: 'LHDN Tax', icon: 'fa-file-invoice-dollar', color: 'text-orange-600' },
+    { id: 'coupons', label: 'Coupon Manager', icon: 'fa-ticket-alt', color: 'text-indigo-600' },
+    { id: 'chatbox', label: 'Direct Chat', icon: 'fa-comments', color: 'text-emerald-600' },
     { id: 'social', label: 'Social Hub', icon: 'fa-share-nodes', color: 'text-pink-600' },
-    { id: 'blast', label: 'Smart Blast', icon: 'fa-paper-plane', color: 'text-emerald-600' }
+    { id: 'blast', label: 'Smart Blast', icon: 'fa-paper-plane', color: 'text-blue-600' },
+    { id: 'lhdn', label: 'LHDN Tax', icon: 'fa-file-invoice-dollar', color: 'text-orange-600' },
+    { id: 'history', label: 'History Log', icon: 'fa-history', color: 'text-gray-400' }
 ];
 
 export function renderSidebar() {
     const container = document.getElementById('sidebar-container');
     
     const sidebarHTML = `
-        <aside class="w-72 bg-white/70 backdrop-blur-xl border-r border-gray-200 p-6 flex flex-col h-screen">
+        <aside class="w-72 bg-white/70 backdrop-blur-xl border-r border-gray-200 p-6 flex flex-col h-screen sticky top-0">
             <div class="mb-10 flex items-center gap-3 px-2">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <i class="fas fa-bolt text-white"></i>
-                </div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-bolt text-white"></i></div>
                 <div>
                     <h1 class="font-extrabold text-xl tracking-tighter">KETICK OS</h1>
                     <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">V6 FLUX</span>
@@ -50,16 +51,8 @@ function setupNavListeners() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const moduleId = e.currentTarget.dataset.module;
-            
-            // Tukar styling butang aktif
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-200');
-                b.classList.add('text-gray-500');
-            });
-            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-200'));
             btn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-200');
-            btn.classList.remove('text-gray-500');
-
             loadModule(moduleId);
         });
     });
