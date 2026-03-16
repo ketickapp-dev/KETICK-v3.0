@@ -1,79 +1,129 @@
-<section id="social-section" class="section-animate">
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-3xl font-black tracking-tight text-gray-800">Social AutoHub</h2>
-            <p class="text-gray-500 text-sm font-medium">Automasi & pemantauan pemasaran multi-platform.</p>
-        </div>
-        <div class="flex gap-3">
-            <button onclick="openScheduleModal()" class="bg-pink-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-pink-100 active:scale-95 transition-all">
-                <i class="fas fa-calendar-plus mr-2"></i> Jadual Baru
-            </button>
-        </div>
-    </div>
+import { globalSave } from './database.js';
+import { utils } from './utils.js';
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white p-5 rounded-[30px] border border-gray-100 flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
-                <i class="fab fa-facebook-f"></i>
-            </div>
-            <div>
-                <p class="text-[9px] font-black text-gray-400 uppercase">Meta</p>
-                <p class="text-xs font-bold text-emerald-500">Connected</p>
-            </div>
-        </div>
-        <div class="bg-white p-5 rounded-[30px] border border-gray-100 flex items-center gap-4">
-            <div class="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center text-xl">
-                <i class="fab fa-tiktok"></i>
-            </div>
-            <div>
-                <p class="text-[9px] font-black text-gray-400 uppercase">TikTok</p>
-                <p class="text-xs font-bold text-emerald-500">Connected</p>
-            </div>
-        </div>
-        <div class="bg-white p-5 rounded-[30px] border border-gray-100 flex items-center gap-4">
-            <div class="w-12 h-12 bg-sky-100 text-sky-500 rounded-2xl flex items-center justify-center text-xl">
-                <i class="fab fa-telegram-plane"></i>
-            </div>
-            <div>
-                <p class="text-[9px] font-black text-gray-400 uppercase">Telegram</p>
-                <p class="text-xs font-bold text-orange-500">Standby</p>
-            </div>
-        </div>
-        <div class="bg-white p-5 rounded-[30px] border border-gray-100 flex items-center gap-4">
-            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl">
-                <i class="fab fa-instagram"></i>
-            </div>
-            <div>
-                <p class="text-[9px] font-black text-gray-400 uppercase">Instagram</p>
-                <p class="text-xs font-bold text-emerald-500">Connected</p>
-            </div>
-        </div>
-    </div>
+let socialSchedules = JSON.parse(localStorage.getItem('f6_social')) || [];
+let selectedPlatforms = [];
 
-    <div class="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-gray-50 bg-gray-50/30">
-            <h4 class="font-bold text-gray-800">Antrian Kandungan (Content Queue)</h4>
-        </div>
-        <div id="social-queue-list" class="divide-y divide-gray-50">
-            </div>
-    </div>
-</section>
+/**
+ * Render utama untuk modul Social AutoHub
+ */
+export function renderSocial() {
+    const container = document.getElementById('social-queue-list');
+    if(!container) return;
 
-<div id="social-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-[45px] p-10 shadow-2xl">
-        <h3 class="text-2xl font-black mb-6">Jadual Pemasaran</h3>
-        <div class="space-y-4">
-            <div class="flex gap-2 p-2 bg-gray-50 rounded-2xl">
-                <button onclick="togglePlatform('fb')" id="btn-fb" class="flex-1 py-2 rounded-xl text-xs font-bold border border-gray-200">Meta</button>
-                <button onclick="togglePlatform('tt')" id="btn-tt" class="flex-1 py-2 rounded-xl text-xs font-bold border border-gray-200">TikTok</button>
-                <button onclick="togglePlatform('tg')" id="btn-tg" class="flex-1 py-2 rounded-xl text-xs font-bold border border-gray-200">Telegram</button>
+    if (socialSchedules.length === 0) {
+        container.innerHTML = `
+            <div class="p-20 text-center text-gray-300 font-bold uppercase text-[10px] tracking-[0.2em]">
+                <i class="fas fa-share-alt text-2xl mb-3 block opacity-20"></i>
+                Tiada jadual aktif
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = socialSchedules.map((item, index) => `
+        <div class="p-6 flex items-center justify-between hover:bg-gray-50 transition border-l-4 border-transparent hover:border-pink-500">
+            <div class="flex items-center gap-4">
+                <div class="flex -space-x-2">
+                    ${item.platforms.map(p => `
+                        <div class="w-8 h-8 rounded-full bg-white border-2 border-white flex items-center justify-center text-[10px] shadow-sm">
+                            <i class="${getIcon(p)}"></i>
+                        </div>
+                    `).join('')}
+                </div>
+                <div>
+                    <p class="font-bold text-gray-800 line-clamp-1 text-sm">${utils.truncateText(item.message, 35)}</p>
+                    <p class="text-[10px] text-gray-400 font-black uppercase tracking-tighter">${item.time}</p>
+                </div>
             </div>
-            <textarea id="social-msg" placeholder="Tulis kapsyen atau mesej iklan anda..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-medium h-32 border-none"></textarea>
-            <input type="datetime-local" id="social-time" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
+            <div class="flex items-center gap-3">
+                <span class="text-[9px] font-black px-2 py-1 bg-blue-50 text-blue-600 rounded-md">QUEUED</span>
+                <button onclick="deleteSchedule(${index})" class="text-gray-200 hover:text-red-500 transition p-2">
+                    <i class="fas fa-trash-alt text-xs"></i>
+                </button>
+            </div>
         </div>
-        <div class="flex gap-4 mt-8">
-            <button onclick="closeScheduleModal()" class="flex-1 p-4 text-gray-400 font-bold">Batal</button>
-            <button onclick="saveSchedule()" class="flex-1 bg-pink-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-pink-100">JADUALKAN</button>
-        </div>
-    </div>
-</div>
+    `).reverse().join('');
+}
+
+/**
+ * Helper untuk ikon platform
+ */
+function getIcon(p) {
+    const icons = {
+        'fb': 'fab fa-facebook-f text-blue-600',
+        'tt': 'fab fa-tiktok text-black',
+        'tg': 'fab fa-telegram-plane text-sky-500'
+    };
+    return icons[p] || 'fas fa-share-alt text-gray-400';
+}
+
+/**
+ * Toggle platform pilihan dalam modal
+ */
+window.togglePlatform = (p) => {
+    const btn = document.getElementById(`btn-${p}`);
+    if (selectedPlatforms.includes(p)) {
+        selectedPlatforms = selectedPlatforms.filter(item => item !== p);
+        btn.classList.remove('bg-black', 'text-white', 'border-black');
+    } else {
+        selectedPlatforms.push(p);
+        btn.classList.add('bg-black', 'text-white', 'border-black');
+    }
+};
+
+/**
+ * Simpan jadual pemasaran baru
+ */
+window.saveSchedule = () => {
+    const message = document.getElementById('social-msg').value;
+    const timeInput = document.getElementById('social-time').value;
+
+    if(selectedPlatforms.length === 0 || !message || !timeInput) {
+        alert("Sila pilih platform, tulis mesej dan tetapkan masa.");
+        return;
+    }
+
+    const newSchedule = {
+        id: utils.generateID('SOC'),
+        platforms: [...selectedPlatforms],
+        message,
+        // Gunakan formatDate untuk simpanan tarikh yang cantik
+        time: new Date(timeInput).toLocaleString('ms-MY', { 
+            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+        }),
+        status: 'queued',
+        createdAt: new Date().toISOString()
+    };
+
+    socialSchedules.push(newSchedule);
+    
+    // Sync ke Cloud & LocalStorage
+    globalSave({ social: socialSchedules });
+    
+    // Reset state & UI
+    selectedPlatforms = [];
+    renderSocial();
+    closeScheduleModal();
+    
+    // Reset form fields
+    document.getElementById('social-msg').value = '';
+    document.getElementById('social-time').value = '';
+    ['fb', 'tt', 'tg'].forEach(p => {
+        document.getElementById(`btn-${p}`).classList.remove('bg-black', 'text-white', 'border-black');
+    });
+};
+
+/**
+ * Padam jadual
+ */
+window.deleteSchedule = (index) => {
+    if(confirm("Padam jadual konten ini?")) {
+        socialSchedules.splice(index, 1);
+        globalSave({ social: socialSchedules });
+        renderSocial();
+    }
+};
+
+// Modal Controls
+window.openScheduleModal = () => document.getElementById('social-modal').classList.remove('hidden');
+window.closeScheduleModal = () => document.getElementById('social-modal').classList.add('hidden');
