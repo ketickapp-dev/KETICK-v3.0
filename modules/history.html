@@ -1,0 +1,27 @@
+<section id="history-section" class="section-animate">
+    <div class="mb-8">
+        <h2 class="text-3xl font-black tracking-tight text-gray-800">History Log</h2>
+        <p class="text-gray-500 text-sm font-medium">Rekod aktiviti dan transaksi sistem.</p>
+    </div>
+
+    <div class="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-50 bg-gray-50/30 flex justify-between">
+            <h4 class="font-bold text-gray-800 text-sm">Log Aktiviti Terkini</h4>
+            <button onclick="clearHistory()" class="text-red-500 text-[10px] font-black uppercase tracking-widest">Kosongkan Log</button>
+        </div>
+        <div id="history-list" class="divide-y divide-gray-50">
+            <div class="p-5 flex justify-between items-center hover:bg-gray-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xs">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-800">Invois #INV-001 Dijana</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">10 Mar 2026 • 2:30 PM</p>
+                    </div>
+                </div>
+                <span class="text-[9px] font-black text-emerald-500 bg-emerald-50 px-2 py-1 rounded">SUCCESS</span>
+            </div>
+        </div>
+    </div>
+</section>
