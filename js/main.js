@@ -9,8 +9,10 @@ import { renderTax } from './tax-logic.js';
 import { renderSocial } from './social-logic.js';
 import { renderBlast } from './blast-logic.js';
 import { renderCoupons } from './coupon-logic.js';
-import { initChatbox } from './chat-logic.js';
 import { renderHistory } from './history-logic.js';
+
+// Menggunakan chatbox-logic untuk fungsi Template Manager
+import { initChatbox } from './chatbox-logic.js'; 
 
 document.addEventListener('DOMContentLoaded', () => {
     renderSidebar();
@@ -40,7 +42,11 @@ export async function loadModule(moduleName) {
 
     } catch (err) {
         console.error("Ralat:", err);
-        viewport.innerHTML = `<div class="p-20 text-center bg-white rounded-[40px]"><h2 class="text-xl font-bold">Ralat Muat Turun Halaman</h2></div>`;
+        viewport.innerHTML = `<div class="p-20 text-center bg-white rounded-[40px] border border-red-50">
+            <i class="fas fa-exclamation-circle text-red-500 mb-4 text-3xl"></i>
+            <h2 class="text-xl font-bold text-gray-800">Ralat Muat Turun Halaman</h2>
+            <p class="text-sm text-gray-400">${err.message}</p>
+        </div>`;
     } finally {
         if (loader) setTimeout(() => loader.classList.add('hidden'), 300);
     }
