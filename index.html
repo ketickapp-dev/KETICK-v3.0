@@ -14,30 +14,29 @@
 </head>
 <body class="flex min-h-screen bg-[#F2F2f7]">
 
-    <div id="sidebar-container"></div>
+    <aside id="sidebar-container" class="z-40"></aside>
 
     <main class="flex-1 p-4 md:p-8 overflow-y-auto" id="main-content">
-        <div id="loader" class="hidden fixed top-5 right-5 bg-white px-4 py-2 rounded-full shadow-lg z-50">
+        <div id="loader" class="hidden fixed top-5 right-5 bg-white px-4 py-2 rounded-full shadow-lg z-[100]">
             <p class="text-[10px] font-bold text-blue-600"><i class="fas fa-sync fa-spin mr-2"></i> LOADING...</p>
         </div>
 
-        <div id="module-viewport" class="max-w-7xl mx-auto">
+        <div id="module-viewport" class="max-w-7xl mx-auto transition-all duration-300">
             </div>
     </main>
 
     <script type="module">
         import { checkAuthStatus } from './js/auth.js';
-        // Semak status login sebaik sahaja index dibuka
-        checkAuthStatus();
+        
+        // 1. Semak konfigurasi API & Status Login
+        const config = localStorage.getItem('ketick_config');
+        if (!config) {
+            window.location.href = 'setup.html';
+        } else {
+            checkAuthStatus();
+        }
     </script>
-    <script type="module" src="js/database.js"></script>
-    <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/main.js"></script>
     
-    <script type="module">
-        import { checkAuthStatus } from './js/auth.js';
-        // Semak status sebelum buat apa-apa
-        checkAuthStatus();
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
