@@ -80,3 +80,37 @@ KETICK OS dioptimumkan sepenuhnya untuk penggunaan mudah alih. Anda boleh menamb
 © 2026 KETICK OS. Hak Cipta Terpelihara.
 *Produk ini adalah sistem perisian untuk kegunaan perniagaan. Sebarang pengedaran semula kod tanpa izin adalah dilarang.*
 
+KETICK_OS/
+├── index.html              # Rangka utama (SPA Container)
+├── login.html              # Halaman Log Masuk (Auth)
+├── setup.html              # Konfigurasi Firebase (First-run)
+├── manifest.json           # Konfigurasi PWA (Boleh install di telefon)
+│
+├── css/
+│   └── styles.css          # Custom Tailwind & Flux UI animations
+│
+├── js/
+│   ├── main.js             # Traffic controller (Module loader)
+│   ├── auth.js             # Logik Login/Logout & Session
+│   ├── database.js         # Firebase Firestore sync & LocalStorage
+│   ├── ui.js               # Render Sidebar & Komponen Global
+│   ├── utils.js            # Format RM, Tarikh, Phone & ID
+│   ├── dashboard-logic.js  # Pengiraan statistik dashboard
+│   ├── crm-logic.js        # Pengurusan data pelanggan
+│   ├── billing-logic.js    # Penjanaan invois & status bayaran
+│   ├── inventory-logic.js  # Kawalan stok & alert stok rendah
+│   ├── tax-logic.js        # LHDN assistant & rekod belanja
+│   ├── social-logic.js     # Penjadualan konten media sosial
+│   └── blast-logic.js      # Penghantaran WhatsApp/Telegram pukal
+│
+├── modules/                # Fail HTML untuk setiap bahagian (SPA)
+│   ├── dashboard.html
+│   ├── crm.html
+│   ├── billing.html
+│   ├── inventory.html
+│   ├── lhdn.html
+│   ├── social.html
+│   └── blast.html
+│
+└── assets/                 # Imej, Ikon, dan Logo
+    └── logo.png
