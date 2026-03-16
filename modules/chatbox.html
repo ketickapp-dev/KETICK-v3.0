@@ -1,25 +1,32 @@
-<section id="chatbox-section" class="section-animate">
+<section class="section-animate">
     <div class="mb-8">
-        <h2 class="text-3xl font-black tracking-tight text-gray-800">WhatsApp Chatbox</h2>
-        <p class="text-gray-500 text-sm font-medium">Hubungi pelanggan terus melalui WhatsApp API.</p>
+        <h2 class="text-3xl font-black tracking-tight text-gray-800">Direct Chatbox</h2>
+        <p class="text-gray-500 text-sm font-medium">Gunakan template professional untuk respon pantas.</p>
     </div>
 
-    <div class="bg-white rounded-[40px] p-8 border border-gray-100 shadow-sm max-w-2xl mx-auto">
-        <div class="space-y-6">
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Nombor Telefon Pelanggan</label>
-                <div class="flex gap-2">
-                    <div class="bg-gray-100 px-4 py-4 rounded-2xl font-bold text-gray-400">+60</div>
-                    <input type="number" id="chat-phone" placeholder="123456789" class="flex-1 p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-[40px] p-8 shadow-sm border border-gray-100">
+                <div class="space-y-4">
+                    <input type="number" id="chat-phone" placeholder="Nombor Telefon (cth: 0123456...)" class="w-full p-5 bg-gray-50 rounded-2xl border-none outline-none font-bold text-lg">
+                    <textarea id="chat-msg" placeholder="Pilih template atau tulis mesej di sini..." class="w-full p-6 bg-gray-50 rounded-[30px] border-none outline-none font-medium h-64 focus:ring-2 focus:ring-blue-500 transition-all"></textarea>
+                </div>
+                
+                <div class="flex gap-4 mt-6">
+                    <button onclick="saveTemplate()" class="flex-1 bg-gray-100 text-gray-600 py-5 rounded-[25px] font-bold active:scale-95 transition">
+                        SIMPAN TEMPLATE
+                    </button>
+                    <button onclick="sendWA()" class="flex-[2] bg-emerald-500 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-emerald-100 flex items-center justify-center gap-3 active:scale-95 transition">
+                        <i class="fab fa-whatsapp text-2xl"></i> HANTAR SEKARANG
+                    </button>
                 </div>
             </div>
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Mesej (Template)</label>
-                <textarea id="chat-msg" placeholder="Salam, saya dari KETICK OS..." class="w-full p-5 bg-gray-50 rounded-[30px] border-none outline-none font-medium h-40"></textarea>
-            </div>
-            <button onclick="sendWA()" class="w-full bg-emerald-500 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-emerald-100 flex items-center justify-center gap-3">
-                <i class="fab fa-whatsapp text-2xl"></i> HANTAR WHATSAPP
-            </button>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest ml-2">Quick Templates</h4>
+            <div id="template-list" class="grid grid-cols-1 gap-3 overflow-y-auto max-h-[600px] pr-2">
+                </div>
         </div>
     </div>
 </section>
