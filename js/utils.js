@@ -40,6 +40,7 @@ export const utils = {
      * Memotong teks yang terlalu panjang (untuk UI mobile)
      */
     truncateText: (text, limit = 20) => {
+        if (!text) return "";
         if (text.length <= limit) return text;
         return text.slice(0, limit) + '...';
     },
@@ -49,6 +50,7 @@ export const utils = {
      * Contoh: +60 12-345 -> 6012345
      */
     cleanPhone: (phone) => {
+        if (!phone) return "";
         return phone.replace(/[^0-9]/g, '');
     }
 };
