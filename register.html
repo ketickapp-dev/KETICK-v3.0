@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar | KETICK OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#F2F2f7] flex items-center justify-center min-h-screen p-6">
+
+    <div class="max-w-sm w-full bg-white rounded-[40px] shadow-2xl p-10 border border-gray-100">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-100">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-black">Daftar Akaun</h2>
+            <p class="text-xs text-gray-400 mt-2 font-bold uppercase">Cipta Akses Pentadbir</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="relative">
+                <i class="fas fa-envelope absolute left-4 top-4 text-gray-300"></i>
+                <input type="email" id="reg-email" placeholder="Alamat Emel" class="w-full p-4 pl-12 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+            <div class="relative">
+                <i class="fas fa-lock absolute left-4 top-4 text-gray-300"></i>
+                <input type="password" id="reg-pass" placeholder="Kata Laluan" class="w-full p-4 pl-12 bg-gray-50 border-none rounded-2xl text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+        </div>
+
+        <button id="btn-register" class="w-full bg-emerald-600 text-white py-5 rounded-[24px] font-bold text-lg mt-8 shadow-xl transition-all active:scale-95">
+            DAFTAR SEKARANG
+        </button>
+
+        <p class="text-center mt-6 text-xs text-gray-400 font-medium">
+            Sudah ada akaun? <a href="login.html" class="text-blue-600 font-bold hover:underline">Log Masuk</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { registerUser } from './js/auth.js';
+        
+        document.getElementById('btn-register').onclick = async () => {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            
+            if (!email || !pass) return alert("Sila isi semua ruangan.");
+            if (pass.length < 6) return alert("Kata laluan mestilah sekurang-kurangnya 6 aksara.");
+            
+            const btn = document.getElementById('btn-register');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
+            btn.disabled = true;
+
+            await registerUser(email, pass);
+            
+            btn.innerHTML = 'DAFTAR SEKARANG';
+            btn.disabled = false;
+        };
+    </script>
+</body>
+</html>
