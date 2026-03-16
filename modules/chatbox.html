@@ -1,0 +1,25 @@
+<section id="chatbox-section" class="section-animate">
+    <div class="mb-8">
+        <h2 class="text-3xl font-black tracking-tight text-gray-800">WhatsApp Chatbox</h2>
+        <p class="text-gray-500 text-sm font-medium">Hubungi pelanggan terus melalui WhatsApp API.</p>
+    </div>
+
+    <div class="bg-white rounded-[40px] p-8 border border-gray-100 shadow-sm max-w-2xl mx-auto">
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Nombor Telefon Pelanggan</label>
+                <div class="flex gap-2">
+                    <div class="bg-gray-100 px-4 py-4 rounded-2xl font-bold text-gray-400">+60</div>
+                    <input type="number" id="chat-phone" placeholder="123456789" class="flex-1 p-4 bg-gray-50 rounded-2xl border-none outline-none font-bold">
+                </div>
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Mesej (Template)</label>
+                <textarea id="chat-msg" placeholder="Salam, saya dari KETICK OS..." class="w-full p-5 bg-gray-50 rounded-[30px] border-none outline-none font-medium h-40"></textarea>
+            </div>
+            <button onclick="sendWA()" class="w-full bg-emerald-500 text-white py-5 rounded-[25px] font-black text-lg shadow-xl shadow-emerald-100 flex items-center justify-center gap-3">
+                <i class="fab fa-whatsapp text-2xl"></i> HANTAR WHATSAPP
+            </button>
+        </div>
+    </div>
+</section>
