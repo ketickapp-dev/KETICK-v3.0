@@ -1,4 +1,5 @@
 // js/chatbox-logic.js
+import { utils } from './utils.js';
 
 const defaultTemplates = [
     { 
@@ -34,9 +35,15 @@ export function initChatbox() {
 
         if (!phone || !message) return alert("Sila masukkan nombor dan mesej.");
 
-        let cleanPhone = phone.replace(/[^0-9]/g, '');
-        if (cleanPhone.startsWith('0')) cleanPhone = '6' + cleanPhone;
-        else if (!cleanPhone.startsWith('60')) cleanPhone = '60' + cleanPhone;
+        // MENGGUNAKAN UTILS UNTUK BERSIHKAN NOMBOR
+        let cleanPhone = utils.cleanPhone(phone);
+        
+        if (cleanPhone.startsWith('0')) {
+            cleanPhone = '6' + cleanPhone;
+        } else if (!cleanPhone.startsWith('6')) {
+            // Jika user terus taip 123..., kita tambah 60
+            cleanPhone = '60' + cleanPhone;
+        }
 
         // Rekod ke History
         addChatHistory(`Mesej dihantar ke +${cleanPhone}`);
@@ -62,7 +69,6 @@ export function initChatbox() {
 
 function renderTemplates() {
     const container = document.getElementById('template-list');
-    // Ambil dari storage, jika tiada guna defaultTemplates yang professional
     const templates = JSON.parse(localStorage.getItem('ketick_templates')) || defaultTemplates;
 
     if (!container) return;
@@ -78,7 +84,6 @@ function renderTemplates() {
         const currentTemplates = JSON.parse(localStorage.getItem('ketick_templates')) || defaultTemplates;
         document.getElementById('chat-msg').value = currentTemplates[index].body;
         
-        // Animasi sikit pada textarea bila template dipilih
         const textarea = document.getElementById('chat-msg');
         textarea.focus();
         textarea.classList.add('ring-2', 'ring-blue-500');
