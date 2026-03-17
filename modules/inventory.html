@@ -41,12 +41,29 @@
             </button>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-4">
             <div>
                 <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Nama Produk</label>
                 <input type="text" id="inv-name" placeholder="Contoh: Kerepek Pisang 500g" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all">
             </div>
             
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kategori</label>
+                    <select id="inv-category" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                        <option value="Umum">Umum</option>
+                        <option value="Makanan">Makanan</option>
+                        <option value="Pakaian">Pakaian</option>
+                        <option value="Servis">Servis</option>
+                        <option value="Lain-lain">Lain-lain</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Min. Stok (Alert)</label>
+                    <input type="number" id="inv-min-alert" placeholder="5" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kos Unit (RM)</label>
@@ -63,14 +80,14 @@
                 <input type="number" id="inv-stock" placeholder="0" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
             
-            <div class="p-4 bg-blue-50 rounded-2xl">
+            <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100">
                 <p class="text-[10px] text-blue-600 font-bold uppercase leading-tight">
-                    <i class="fas fa-info-circle mr-1"></i> Tip: SKU akan dijana secara automatik oleh sistem selepas anda menekan butang simpan.
+                    <i class="fas fa-magic mr-1"></i> Sistem akan menjana SKU & merekod tarikh kemas kini secara automatik.
                 </p>
             </div>
 
-            <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm mt-4 shadow-xl shadow-blue-100 transition-all hover:bg-blue-700 active:scale-95">
-                SIMPAN PRODUK KE GUDANG
+            <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm mt-2 shadow-xl shadow-blue-100 transition-all hover:bg-blue-700 active:scale-95">
+                SIMPAN KE GUDANG
             </button>
         </div>
     </div>
