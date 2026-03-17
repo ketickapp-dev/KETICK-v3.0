@@ -50,10 +50,16 @@
         <div class="space-y-5">
             <div>
                 <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Jenis Dokumen</label>
-                <select id="bill-type" onchange="updateBillTheme()" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
+                <select id="bill-type" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
                     <option value="Quotation">QUOTATION (Sebut Harga)</option>
                     <option value="Invoice">INVOICE (Invois)</option>
                     <option value="Receipt">OFFICIAL RECEIPT (Resit)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Pelanggan (Dari CRM)</label>
+                <select id="bill-client-select" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
                 </select>
             </div>
 
@@ -71,11 +77,6 @@
                     <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Harga Unit (RM)</label>
                     <input type="number" id="bill-price" placeholder="0.00" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
                 </div>
-            </div>
-
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Nama Pelanggan / No. Phone</label>
-                <input type="text" id="bill-client" placeholder="Ali bin Abu / 0123456789" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
             </div>
         </div>
 
