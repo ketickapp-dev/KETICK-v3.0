@@ -72,18 +72,67 @@ export function renderBilling() {
 }
 
 /**
- * Logik WhatsApp
+ * LOGIK UTAMA: SAVE & AUTO-WHATSAPP
  */
+window.saveBilling = () => {
+    const type = document.getElementById('bill-type').value;
+    const clientName = document.getElementById('bill-client-select').value;
+    const sku = document.getElementById('bill-product-select').value;
+    const qty = parseInt(document.getElementById('bill-qty').value);
+    const price = parseFloat(document.getElementById('bill-price').value);
+
+    if (!clientName || !sku || !qty || !price) return alert("Sila lengkapkan maklumat!");
+
+    if (type === 'Receipt') {
+        const itemIdx = inventory.findIndex(i => i.sku === sku);
+        if (itemIdx > -1) {
+            if (inventory[itemIdx].stock < qty) return alert("Stok tidak cukup!");
+            inventory[itemIdx].stock -= qty;
+            localStorage.setItem('ketick_inventory', JSON.stringify(inventory));
+        }
+    }
+
+    const newBill = {
+        no: (type[0] + Date.now().toString().slice(-6)).toUpperCase(),
+        type, client: clientName, sku, qty, price, total: qty * price,
+        date: new Date().toLocaleDateString('ms-MY')
+    };
+
+    billings.unshift(newBill);
+    localStorage.setItem('ketick_billings', JSON.stringify(billings));
+    addAuditLog("JANA DOKUMEN", `Berjaya jana ${type} #${newBill.no} untuk ${clientName}`);
+    
+    globalSave({ billings, inventory, auditLogs });
+    renderBilling();
+    toggleBillingModal(false);
+
+    // Automasi WhatsApp
+    const clientData = clients.find(c => c.name === clientName);
+    const phone = clientData ? clientData.phone : "";
+
+    setTimeout(() => {
+        if (!phone) {
+            const manualPhone = prompt(`Dokumen #${newBill.no} dijana. No. telefon ${clientName} tiada dalam CRM. Masukkan no. WhatsApp (cth: 60123456789):`);
+            if (manualPhone) sendWA(manualPhone, newBill);
+        } else {
+            sendWA(phone, newBill);
+        }
+    }, 500);
+};
+
 window.shareWhatsApp = (index) => {
     const bill = billings[index];
     const clientData = clients.find(c => c.name === bill.client);
     let phone = clientData ? clientData.phone : "";
     
     if(!phone) {
-        phone = prompt("No. WhatsApp pelanggan tidak ditemui. Sila masukkan no. phone (cth: 60123456789):");
+        phone = prompt("Masukkan no. WhatsApp (cth: 60123456789):");
         if(!phone) return;
     }
-    
+    sendWA(phone, bill);
+};
+
+function sendWA(phone, bill) {
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     const finalPhone = cleanPhone.startsWith('6') ? cleanPhone : '6' + cleanPhone;
     
@@ -98,41 +147,11 @@ window.shareWhatsApp = (index) => {
 
     window.open(`https://wa.me/${finalPhone}?text=${text}`, '_blank');
     addAuditLog("WHATSAPP SENT", `Dokumen #${bill.no} dihantar ke ${bill.client}`);
-};
+}
 
-window.saveBilling = () => {
-    const type = document.getElementById('bill-type').value;
-    const client = document.getElementById('bill-client-select').value;
-    const sku = document.getElementById('bill-product-select').value;
-    const qty = parseInt(document.getElementById('bill-qty').value);
-    const price = parseFloat(document.getElementById('bill-price').value);
-
-    if (!client || !sku || !qty || !price) return alert("Sila lengkapkan maklumat!");
-
-    if (type === 'Receipt') {
-        const itemIdx = inventory.findIndex(i => i.sku === sku);
-        if (itemIdx > -1) {
-            if (inventory[itemIdx].stock < qty) return alert("Stok tidak cukup!");
-            inventory[itemIdx].stock -= qty;
-            localStorage.setItem('ketick_inventory', JSON.stringify(inventory));
-        }
-    }
-
-    const newBill = {
-        no: (type[0] + Date.now().toString().slice(-6)).toUpperCase(),
-        type, client, sku, qty, price, total: qty * price,
-        date: new Date().toLocaleDateString('ms-MY')
-    };
-
-    billings.unshift(newBill);
-    localStorage.setItem('ketick_billings', JSON.stringify(billings));
-    addAuditLog("JANA DOKUMEN", `Berjaya jana ${type} #${newBill.no} untuk ${client}`);
-    
-    globalSave({ billings, inventory, auditLogs });
-    renderBilling();
-    toggleBillingModal(false);
-};
-
+/**
+ * LOGIK VOID, PRINT & UTILITY
+ */
 window.askVoid = (index) => {
     pendingVoidIndex = index;
     document.getElementById('void-modal').classList.remove('hidden');
