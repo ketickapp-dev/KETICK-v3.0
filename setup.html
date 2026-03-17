@@ -8,16 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #F2F2f7; 
-            background-image: radial-gradient(circle at top right, #e0e7ff, transparent), radial-gradient(circle at bottom left, #fce7f3, transparent);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F2F2f7; background-image: radial-gradient(circle at top right, #e0e7ff, transparent), radial-gradient(circle at bottom left, #fce7f3, transparent); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .hidden-step { display: none; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-6">
@@ -25,101 +18,80 @@
     <div id="setup-card" class="max-w-md w-full glass-card rounded-[45px] shadow-2xl p-10 border border-white transition-all duration-500">
         <div class="flex justify-between items-start mb-8">
             <div class="w-16 h-16 bg-blue-600 rounded-[22px] flex items-center justify-center shadow-2xl shadow-blue-200">
-                <i class="fas fa-cloud-bolt text-white text-2xl animate-pulse"></i>
+                <i class="fas fa-briefcase text-white text-2xl" id="step-icon"></i>
             </div>
             <div class="text-right">
-                <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">Step 1 of 1</span>
+                <span id="step-indicator" class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">Step 1 of 2</span>
             </div>
         </div>
         
-        <h2 class="text-3xl font-black tracking-tighter text-gray-800 mb-2">Konfigurasi Cloud</h2>
-        <p class="text-sm text-gray-500 font-medium mb-8 leading-relaxed">
-            Sila masukkan maklumat dari <b>Firebase Console</b> untuk mengaktifkan fungsi simpanan awan & sekuriti KETICK OS.
-        </p>
-        
-        <div class="space-y-4">
-            <div class="group">
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1.5 block group-focus-within:text-blue-600 transition">Firebase API Key</label>
-                <input type="text" id="api-key" placeholder="AIzaSy..." class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+        <div id="step-1" class="space-y-4">
+            <h2 class="text-3xl font-black tracking-tighter text-gray-800 mb-2">Konfigurasi Cloud</h2>
+            <p class="text-sm text-gray-500 font-medium mb-6 leading-relaxed">Masukkan maklumat Firebase anda.</p>
+            
+            <input type="text" id="api-key" placeholder="Firebase API Key" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold outline-none mb-2">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="project-id" placeholder="Project ID" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold outline-none">
+                <input type="text" id="auth-domain" placeholder="Auth Domain" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold outline-none">
             </div>
+            <button onclick="nextStep(2)" class="w-full bg-black text-white py-5 rounded-[28px] font-black text-sm mt-6 flex items-center justify-center gap-3">
+                TERUSKAN <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <div id="step-2" class="space-y-4 hidden-step">
+            <h2 class="text-3xl font-black tracking-tighter text-gray-800 mb-2">Profil Bisnes</h2>
+            <p class="text-sm text-gray-500 font-medium mb-6">Maklumat ini akan dipaparkan pada Invois/Resit.</p>
+            
+            <input type="text" id="biz-name" placeholder="Nama Syarikat / Kedai" class="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold outline-none">
+            <input type="text" id="biz-ssm" placeholder="No. SSM / Pendaftaran" class="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold outline-none">
+            <textarea id="biz-address" placeholder="Alamat Penuh Premis" class="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold outline-none h-20"></textarea>
             
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1.5 block">Project ID</label>
-                    <input type="text" id="project-id" placeholder="ketick-os-xxx" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1.5 block">Auth Domain</label>
-                    <input type="text" id="auth-domain" placeholder="xxx.firebaseapp.com" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                </div>
+                <input type="text" id="biz-bank" placeholder="Nama Bank (Cth: Maybank)" class="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold outline-none">
+                <input type="text" id="biz-acc" placeholder="No. Akaun Bank" class="w-full p-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold outline-none">
             </div>
 
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1.5 block">Storage Bucket</label>
-                <input type="text" id="storage-bucket" placeholder="xxx.appspot.com" class="w-full p-4 bg-white/50 border border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-            </div>
-        </div>
-
-        <button onclick="saveConfig()" id="btn-save" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-[28px] font-black text-lg mt-10 shadow-2xl shadow-blue-200 transition-all active:scale-95 flex items-center justify-center gap-3">
-            <span>AKTIFKAN SISTEM</span>
-            <i class="fas fa-arrow-right text-sm"></i>
-        </button>
-        
-        <div class="mt-8 flex items-center justify-center gap-4 opacity-30">
-            <div class="h-[1px] flex-1 bg-gray-400"></div>
-            <p class="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em]">Ketick OS Flux</p>
-            <div class="h-[1px] flex-1 bg-gray-400"></div>
+            <button onclick="saveAllConfig()" id="btn-save" class="w-full bg-blue-600 text-white py-5 rounded-[28px] font-black text-sm mt-6 shadow-xl active:scale-95">
+                AKTIFKAN SISTEM & PROFIL
+            </button>
         </div>
     </div>
 
     <script>
-        // Semak jika konfigurasi sedia ada
-        window.onload = () => {
-            const saved = localStorage.getItem('ketick_config');
-            if(saved) {
-                const data = JSON.parse(saved);
-                document.getElementById('api-key').value = data.apiKey || '';
-                document.getElementById('project-id').value = data.projectId || '';
-                document.getElementById('auth-domain').value = data.authDomain || '';
-                document.getElementById('storage-bucket').value = data.storageBucket || '';
-            }
-        };
+        function nextStep(step) {
+            document.getElementById('step-1').classList.add('hidden-step');
+            document.getElementById('step-2').classList.remove('hidden-step');
+            document.getElementById('step-indicator').innerText = 'Step 2 of 2';
+            document.getElementById('step-icon').className = 'fas fa-id-card text-white text-2xl';
+        }
 
-        async function saveConfig() {
+        async function saveAllConfig() {
             const btn = document.getElementById('btn-save');
-            const card = document.getElementById('setup-card');
             
+            // 1. Simpan Config Firebase
             const config = {
-                apiKey: document.getElementById('api-key').value.trim(),
-                authDomain: document.getElementById('auth-domain').value.trim(),
-                projectId: document.getElementById('project-id').value.trim(),
-                storageBucket: document.getElementById('storage-bucket').value.trim()
+                apiKey: document.getElementById('api-key').value,
+                projectId: document.getElementById('project-id').value,
+                authDomain: document.getElementById('auth-domain').value
             };
-
-            // Validasi Input
-            if(!config.apiKey || !config.projectId) {
-                alert("Ralat: Firebase API Key dan Project ID diperlukan.");
-                return;
-            }
-
-            // Animasi Loading
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-circle-notch animate-spin"></i> MENYAMBUNGKAN...`;
-            
-            // Simpan ke LocalStorage
             localStorage.setItem('ketick_config', JSON.stringify(config));
-            
-            // Simulasi "Handshake" dengan cloud
+
+            // 2. Simpan Profil Bisnes
+            const profile = {
+                name: document.getElementById('biz-name').value.toUpperCase(),
+                ssm: document.getElementById('biz-ssm').value,
+                address: document.getElementById('biz-address').value,
+                bankName: document.getElementById('biz-bank').value.toUpperCase(),
+                bankAcc: document.getElementById('biz-acc').value,
+                phone: "Sila Kemaskini", // Boleh ditambah input jika perlu
+                logo: "https://cdn-icons-png.flaticon.com/512/6211/6211181.png"
+            };
+            localStorage.setItem('ketick_business_profile', JSON.stringify(profile));
+
+            btn.innerHTML = `<i class="fas fa-circle-notch animate-spin"></i> MENYIMPAN...`;
             setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check-circle"></i> BERJAYA!`;
-                btn.classList.replace('bg-blue-600', 'bg-emerald-500');
-                
-                setTimeout(() => {
-                    card.classList.add('opacity-0', 'scale-95');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 500);
-                }, 1000);
+                window.location.href = 'index.html';
             }, 1500);
         }
     </script>
