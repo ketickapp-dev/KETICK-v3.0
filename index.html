@@ -4,37 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KETICK OS | Business Suite</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="css/styles.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root {
+            --ios-bg: #F2F2f7;
+        }
+
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             overflow-x: hidden;
+            background-color: var(--ios-bg);
         }
         
         /* Smooth transition untuk loading modul */
         #module-viewport {
-            transition: all 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-out;
+        }
+
+        .module-loading {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        /* Custom Scrollbar untuk gaya Mobile/iOS */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d1d6;
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="flex min-h-screen bg-[#F2F2f7]">
+<body class="flex min-h-screen">
 
     <aside id="sidebar-container" class="z-40"></aside>
 
-    <main class="flex-1 p-4 md:p-8 overflow-y-auto" id="main-content">
-        <div id="loader" class="hidden fixed top-5 right-5 bg-white px-4 py-2 rounded-full shadow-lg z-[100] border border-blue-50">
-            <p class="text-[10px] font-bold text-blue-600 flex items-center">
-                <i class="fas fa-sync fa-spin mr-2"></i> KETICK OS LOADING...
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen" id="main-content">
+        
+        <div id="loader" class="hidden fixed top-5 right-5 bg-white/80 backdrop-blur-md px-5 py-3 rounded-full shadow-2xl z-[100] border border-blue-50 animate-bounce">
+            <p class="text-[10px] font-black text-blue-600 flex items-center tracking-widest uppercase">
+                <i class="fas fa-circle-notch fa-spin mr-3 text-sm"></i> KETICK OS Syncing...
             </p>
         </div>
 
         <div id="module-viewport" class="max-w-7xl mx-auto opacity-100">
             </div>
+        
     </main>
 
     <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
