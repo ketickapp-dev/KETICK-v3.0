@@ -1,20 +1,77 @@
 <section id="inventory-section" class="section-animate">
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-black">Inventori Stok</h2>
-        <button onclick="addInventoryItem()" class="bg-black text-white px-8 py-3 rounded-2xl font-bold">+ Produk Baru</button>
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl md:text-3xl font-black text-gray-800 tracking-tighter">Inventori Stok</h2>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Urus Gudang & Kawalan Produk</p>
+        </div>
+        <button onclick="toggleInventoryModal(true)" class="bg-black text-white px-6 py-3 rounded-2xl font-bold text-xs hover:bg-blue-600 transition-all shadow-lg active:scale-95">
+            + PRODUK BARU
+        </button>
     </div>
-    <div class="flux-card overflow-x-auto bg-white rounded-[28px] p-4">
-        <table class="w-full text-left">
-            <thead class="border-b">
-                <tr class="text-[10px] uppercase font-bold text-gray-400">
-                    <th class="p-6">Produk</th>
-                    <th class="p-6">Kos</th>
-                    <th class="p-6">Jual</th>
-                    <th class="p-6 text-center">Stok</th>
-                </tr>
-            </thead>
-            <tbody id="inventory-table-body">
-                </tbody>
-        </table>
+
+    <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b border-gray-100">
+                    <tr class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
+                        <th class="p-6">Produk & SKU</th>
+                        <th class="p-6 text-center">Harga Kos</th>
+                        <th class="p-6 text-center">Harga Jual</th>
+                        <th class="p-6 text-center">Baki Stok</th>
+                        <th class="p-6 text-right">Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table-body">
+                    </tbody>
+            </table>
+        </div>
     </div>
 </section>
+
+<div id="inv-modal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity" onclick="toggleInventoryModal(false)"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl p-8 transform transition-transform duration-300 translate-x-full" id="modal-content">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h3 class="text-xl font-black italic uppercase">Tambah Stok Baru</h3>
+                <p class="text-[10px] text-gray-400 font-bold">Sila isi maklumat produk dengan teliti</p>
+            </div>
+            <button onclick="toggleInventoryModal(false)" class="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-400 hover:text-red-500 rounded-full transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="space-y-5">
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Nama Produk</label>
+                <input type="text" id="inv-name" placeholder="Contoh: Kerepek Pisang 500g" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kos Unit (RM)</label>
+                    <input type="number" id="inv-cost" placeholder="0.00" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Harga Jual (RM)</label>
+                    <input type="number" id="inv-price" placeholder="0.00" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-1 block">Kuantiti Stok Awal</label>
+                <input type="number" id="inv-stock" placeholder="0" class="w-full p-4 bg-gray-50 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            
+            <div class="p-4 bg-blue-50 rounded-2xl">
+                <p class="text-[10px] text-blue-600 font-bold uppercase leading-tight">
+                    <i class="fas fa-info-circle mr-1"></i> Tip: SKU akan dijana secara automatik oleh sistem selepas anda menekan butang simpan.
+                </p>
+            </div>
+
+            <button onclick="saveProduct()" class="w-full bg-blue-600 text-white py-5 rounded-[24px] font-black text-sm mt-4 shadow-xl shadow-blue-100 transition-all hover:bg-blue-700 active:scale-95">
+                SIMPAN PRODUK KE GUDANG
+            </button>
+        </div>
+    </div>
+</div>
