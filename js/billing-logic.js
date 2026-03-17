@@ -65,67 +65,106 @@ export function renderBilling() {
 }
 
 /**
- * MODUL PREVIEW & CETAK
+ * MODUL PREVIEW & CETAK PREMIUM (DARK MODE UI)
  */
 window.printBill = (index) => {
     const bill = billings[index];
-    const theme = getBillTheme(bill.type);
     const product = inventory.find(i => i.sku === bill.sku)?.name || "Produk/Servis";
     
+    // Ambil info perniagaan dari localStorage (Data dari Setup Wizard)
+    const biz = JSON.parse(localStorage.getItem('ketick_business_profile')) || {
+        name: "KETICK SOLUTION",
+        ssm: "SA0123456-X",
+        address: "Sila kemaskini alamat di profil anda.",
+        phone: "60123456789",
+        bankName: "MAYBANK",
+        bankAcc: "000000000000",
+        logo: "https://cdn-icons-png.flaticon.com/512/6211/6211181.png"
+    };
+
     const previewModal = document.getElementById('preview-modal');
     const previewContent = document.getElementById('preview-content');
 
-    // Suntikan UI Dark Mode ke dalam Preview
     previewContent.innerHTML = `
-        <div class="space-y-8 animate-in fade-in zoom-in duration-300">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h2 class="text-2xl font-black text-blue-400">KETICK OS</h2>
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Digital Business Solution</p>
+        <div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div class="flex justify-between items-start gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="${biz.logo}" class="w-14 h-14 rounded-2xl object-cover border border-white/10 p-1 bg-white/5 shadow-xl">
+                    <div>
+                        <h2 class="text-lg font-black text-white leading-none tracking-tight">${biz.name}</h2>
+                        <p class="text-[8px] text-blue-400 font-bold tracking-[0.2em] mt-1">${biz.ssm}</p>
+                        <p class="text-[9px] text-gray-500 mt-2 leading-tight max-w-[160px] font-medium">${biz.address}</p>
+                    </div>
                 </div>
                 <div class="text-right">
-                    <h1 class="text-3xl font-black text-white italic uppercase leading-none">${bill.type}</h1>
-                    <p class="text-[10px] text-blue-500 font-black mt-1 tracking-widest">#${bill.no}</p>
+                    <div class="inline-block px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 mb-2">
+                        <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">${bill.type}</span>
+                    </div>
+                    <h1 class="text-xl font-black text-white tracking-tighter">#${bill.no}</h1>
+                    <p class="text-[9px] text-gray-500 font-bold">${bill.date}</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 py-6 border-y border-white/5">
+            <div class="bg-white/5 rounded-[1.5rem] p-5 border border-white/5 grid grid-cols-2 gap-4">
                 <div>
-                    <p class="text-[9px] font-black text-gray-500 uppercase mb-1">Diterbitkan Untuk:</p>
+                    <p class="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">Kepada:</p>
                     <p class="font-bold text-sm text-white">${bill.client}</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-[9px] font-black text-gray-500 uppercase mb-1">Tarikh Dokumen:</p>
-                    <p class="font-bold text-sm text-white">${bill.date}</p>
+                    <p class="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">Hubungi Syarikat:</p>
+                    <p class="font-bold text-sm text-white">${biz.phone}</p>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <p class="text-[9px] font-black text-gray-500 uppercase ml-1">Butiran Transaksi</p>
-                <div class="bg-white/5 p-5 rounded-[2rem] border border-white/5">
+            <div class="px-1">
+                <div class="flex justify-between text-[8px] font-black text-gray-600 uppercase tracking-widest mb-3 px-2">
+                    <span>Butiran Item</span>
+                    <span>Subtotal</span>
+                </div>
+                
+                <div class="bg-gradient-to-r from-blue-600/10 to-transparent p-5 rounded-2xl border-l-4 border-blue-600 mb-2">
                     <div class="flex justify-between items-center">
-                        <div class="flex-1">
-                            <p class="font-bold text-white text-sm">${product}</p>
-                            <p class="text-[10px] text-gray-400 mt-1">${bill.qty} Unit x ${utils.formatRM(bill.price)}</p>
+                        <div>
+                            <p class="font-bold text-white text-base">${product}</p>
+                            <p class="text-[9px] text-gray-400 mt-1 uppercase font-medium">${bill.qty} Unit @ ${utils.formatRM(bill.price)}</p>
                         </div>
-                        <p class="font-black text-lg text-white">${utils.formatRM(bill.total)}</p>
+                        <p class="font-black text-xl text-white">${utils.formatRM(bill.total)}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-6 border-t border-white/5 flex justify-between items-center">
-                <div>
-                    <p class="text-[9px] font-black text-gray-500 uppercase">Jumlah Bersih</p>
-                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest mt-1">Status: Paid & Verified</p>
+            <div class="grid grid-cols-2 gap-4 items-end pt-2">
+                <div class="space-y-2">
+                    <p class="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Informasi Bank:</p>
+                    <div class="bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-xl">
+                        <p class="text-[8px] text-gray-400 font-bold uppercase mb-0.5">${biz.bankName}</p>
+                        <p class="text-xs font-black text-white tracking-widest">${biz.bankAcc}</p>
+                    </div>
                 </div>
-                <p class="text-4xl font-black text-emerald-400 tracking-tighter">${utils.formatRM(bill.total)}</p>
+
+                <div class="text-right">
+                    <p class="text-[9px] font-black text-gray-500 uppercase mb-1">Jumlah Bersih</p>
+                    <p class="text-4xl font-black text-white tracking-tighter">${utils.formatRM(bill.total)}</p>
+                </div>
+            </div>
+
+            <div class="relative mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
+                <div class="text-[8px] text-gray-600 font-medium leading-relaxed italic">
+                    * Dokumen dijana melalui KETICK OS.<br>
+                    * Sah tanpa tandatangan fizikal.
+                </div>
+                
+                <div class="absolute right-0 -top-4 opacity-20 transform rotate-12 pointer-events-none">
+                    <div class="w-20 h-20 border-4 border-blue-500 rounded-full flex items-center justify-center text-center p-2">
+                        <p class="text-blue-500 font-black text-[8px] uppercase leading-tight">Verified<br>Digital<br>Seal</p>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 
     document.getElementById('btn-print-now').onclick = () => actualPrint(index);
     document.getElementById('btn-wa-now').onclick = () => window.shareWhatsApp(index);
-
     previewModal.classList.remove('hidden');
 };
 
@@ -137,6 +176,7 @@ function actualPrint(index) {
     const bill = billings[index];
     const theme = getBillTheme(bill.type);
     const product = inventory.find(i => i.sku === bill.sku)?.name || "Produk/Servis";
+    const biz = JSON.parse(localStorage.getItem('ketick_business_profile')) || { name: "KETICK OS" };
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -147,30 +187,56 @@ function actualPrint(index) {
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap');
                 body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-print-color-adjust: exact; }
+                @media print { .no-print { display: none; } }
             </style>
         </head>
-        <body class="p-10">
-            <div class="flex justify-between mb-10">
-                <h1 class="text-4xl font-black uppercase" style="color:${theme.color}">${bill.type}</h1>
+        <body class="p-10 text-gray-800">
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <h1 class="text-4xl font-black uppercase mb-2" style="color:${theme.color}">${bill.type}</h1>
+                    <p class="text-sm font-bold text-gray-400">NO: #${bill.no}</p>
+                </div>
                 <div class="text-right">
-                    <p class="text-xl font-bold">KETICK OS</p>
-                    <p class="text-xs text-gray-400 uppercase tracking-widest">ID: #${bill.no}</p>
+                    <p class="text-2xl font-black">${biz.name}</p>
+                    <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">Digital Invoice System</p>
                 </div>
             </div>
-            <div class="border-y border-gray-100 py-8 mb-10 grid grid-cols-2">
-                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Pelanggan</p><p class="font-black">${bill.client}</p></div>
-                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh</p><p class="font-black">${bill.date}</p></div>
+            <div class="grid grid-cols-2 border-y border-gray-100 py-8 mb-10">
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Kepada:</p>
+                    <p class="font-black text-lg">${bill.client}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Tarikh:</p>
+                    <p class="font-black text-lg">${bill.date}</p>
+                </div>
             </div>
             <table class="w-full mb-10">
-                <tr class="border-b-2 border-gray-50 text-[10px] font-bold text-gray-400 uppercase">
-                    <th class="text-left py-4">Deskripsi</th>
-                    <th class="text-right">Jumlah</th>
-                </tr>
-                <tr>
-                    <td class="py-6 font-bold">${product} (x${bill.qty})</td>
-                    <td class="text-right font-black text-xl">${utils.formatRM(bill.total)}</td>
-                </tr>
+                <thead>
+                    <tr class="border-b-2 border-gray-100 text-[10px] font-bold text-gray-400 uppercase">
+                        <th class="text-left py-4">Deskripsi Item</th>
+                        <th class="text-right py-4">Jumlah (RM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-6">
+                            <p class="font-black text-gray-800">${product}</p>
+                            <p class="text-xs text-gray-400">${bill.qty} Unit x ${utils.formatRM(bill.price)}</p>
+                        </td>
+                        <td class="text-right font-black text-2xl">${utils.formatRM(bill.total)}</td>
+                    </tr>
+                </tbody>
             </table>
+            <div class="flex justify-between items-end pt-10 border-t border-gray-100">
+                <div class="text-xs text-gray-400 font-medium">
+                    Terima kasih atas urusan anda.<br>Sila simpan dokumen ini sebagai rujukan rasmi.
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Jumlah Besar</p>
+                    <p class="text-4xl font-black text-gray-900">${utils.formatRM(bill.total)}</p>
+                </div>
+            </div>
             <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };</script>
         </body>
         </html>
@@ -212,13 +278,14 @@ window.saveBilling = () => {
     renderBilling();
     toggleBillingModal(false);
     
-    // Terus tunjuk preview selepas save
+    // Auto-tunjuk preview selepas simpan
     setTimeout(() => window.printBill(0), 400);
 };
 
 window.shareWhatsApp = (index) => {
     const bill = billings[index];
     const clientData = clients.find(c => c.name === bill.client);
+    const biz = JSON.parse(localStorage.getItem('ketick_business_profile')) || { name: "KETICK OS" };
     let phone = clientData ? clientData.phone : "";
     
     if(!phone) {
@@ -228,7 +295,7 @@ window.shareWhatsApp = (index) => {
     
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     const finalPhone = cleanPhone.startsWith('6') ? cleanPhone : '6' + cleanPhone;
-    const text = `*DOKUMEN ${bill.type.toUpperCase()} - KETICK OS*%0A%0ANo: #${bill.no}%0APelanggan: ${bill.client}%0AJumlah: *${utils.formatRM(bill.total)}*%0A%0ATerima kasih!`;
+    const text = `*DOKUMEN ${bill.type.toUpperCase()} - ${biz.name}*%0A%0ANo: #${bill.no}%0APelanggan: ${bill.client}%0AJumlah: *${utils.formatRM(bill.total)}*%0A%0ATerima kasih!`;
     window.open(`https://wa.me/${finalPhone}?text=${text}`, '_blank');
 };
 
