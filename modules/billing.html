@@ -1,87 +1,30 @@
-<section id="billing-section" class="section-animate">
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-3xl font-black tracking-tight text-gray-800">Sistem Billing</h2>
-            <p class="text-gray-500 text-sm font-medium">Urus Quotation, Invois & Resit Rasmi.</p>
-        </div>
-        <button onclick="toggleBillingModal(true)" class="bg-black text-white px-8 py-4 rounded-[24px] font-bold shadow-xl active:scale-95 transition-all">
-            + DOKUMEN BARU
-        </button>
+<div class="mt-12 bg-white rounded-[35px] border border-red-50 shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-red-50/30">
+        <h4 class="font-bold text-red-600 text-sm uppercase tracking-widest"><i class="fas fa-history mr-2"></i> Audit Log (Aktiviti Sensitif)</h4>
+        <span class="text-[9px] font-black text-red-300 uppercase">Admin Only</span>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-emerald-500 p-6 rounded-[30px] shadow-lg shadow-emerald-100 text-white">
-            <p class="text-[10px] font-black opacity-70 uppercase tracking-widest mb-1">Total Kutipan (Resit)</p>
-            <h3 id="bill-total-paid" class="text-2xl font-black">RM 0.00</h3>
-        </div>
-        <div class="bg-orange-500 p-6 rounded-[30px] shadow-lg shadow-orange-100 text-white">
-            <p class="text-[10px] font-black opacity-70 uppercase tracking-widest mb-1">Belum Bayar (Invois)</p>
-            <h3 id="bill-total-pending" class="text-2xl font-black">RM 0.00</h3>
-        </div>
-        <div class="bg-white p-6 rounded-[30px] border border-gray-100 shadow-sm">
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Jumlah Dokumen</p>
-            <h3 id="bill-count" class="text-2xl font-black text-gray-800">0</h3>
-        </div>
+    <div class="max-h-60 overflow-y-auto">
+        <table class="w-full text-left">
+            <tbody id="billing-audit-log" class="text-[11px]">
+                </tbody>
+        </table>
     </div>
+</div>
 
-    <div class="bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50/50">
-                    <tr class="text-[10px] uppercase font-black text-gray-400 tracking-widest">
-                        <th class="p-6">No. Dokumen</th>
-                        <th class="p-6">Pelanggan</th>
-                        <th class="p-6">Jumlah</th>
-                        <th class="p-6">Jenis</th>
-                        <th class="p-6 text-right">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="billing-table-body"></tbody>
-            </table>
+<div id="void-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
+    <div class="bg-white w-full max-w-xs rounded-[35px] p-8 relative z-10 shadow-2xl text-center">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-shield-alt text-2xl"></i>
         </div>
-    </div>
-</section>
-
-<div id="billing-modal" class="fixed inset-0 z-[100] hidden">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleBillingModal(false)"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full max-w-lg bg-white shadow-2xl p-10 transform transition-transform duration-300 translate-x-full" id="bill-modal-content">
-        <h3 class="text-2xl font-black mb-8 italic uppercase tracking-tighter">Jana Dokumen Baru</h3>
+        <h3 class="font-black text-gray-800 mb-2">Pengesahan Admin</h3>
+        <p class="text-xs text-gray-500 mb-6 font-medium">Sila masukkan password untuk memadam/void dokumen ini.</p>
         
-        <div class="space-y-5">
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Jenis Dokumen</label>
-                <select id="bill-type" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
-                    <option value="Quotation">QUOTATION (Sebut Harga)</option>
-                    <option value="Invoice">INVOICE (Invois)</option>
-                    <option value="Receipt">OFFICIAL RECEIPT (Resit)</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Pelanggan (Dari CRM)</label>
-                <select id="bill-client-select" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold text-gray-800 border-none">
-                </select>
-            </div>
-
-            <div>
-                <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Pilih Produk (Dari Inventori)</label>
-                <select id="bill-product-select" onchange="autoFillPrice()" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold border-none"></select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Kuantiti</label>
-                    <input type="number" id="bill-qty" value="1" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase ml-2 mb-2 block">Harga Unit (RM)</label>
-                    <input type="number" id="bill-price" placeholder="0.00" class="w-full p-4 bg-gray-50 rounded-2xl outline-none font-bold">
-                </div>
-            </div>
+        <input type="password" id="admin-password" placeholder="••••" class="w-full p-4 bg-gray-50 rounded-2xl text-center font-black tracking-[0.5em] border-none outline-none focus:ring-2 focus:ring-red-500 mb-4">
+        
+        <div class="flex gap-3">
+            <button onclick="closeVoidModal()" class="flex-1 py-3 font-bold text-gray-400 text-sm">Batal</button>
+            <button onclick="confirmVoid()" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-red-200">VOID BILL</button>
         </div>
-
-        <button onclick="saveBilling()" id="btn-save-bill" class="w-full bg-blue-600 text-white p-5 rounded-[28px] font-black text-sm mt-10 shadow-xl active:scale-95 transition-all">
-            GENERATE DOKUMEN
-        </button>
     </div>
 </div>
