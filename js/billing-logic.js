@@ -17,11 +17,9 @@ export function renderBilling() {
     
     if(!table) return;
 
-    // Refresh data
     inventory = JSON.parse(localStorage.getItem('ketick_inventory')) || [];
     clients = JSON.parse(localStorage.getItem('f6_clients')) || [];
 
-    // 1. Load Dropdowns
     if(productSelect) {
         productSelect.innerHTML = '<option value="">-- Pilih Produk --</option>' + 
             inventory.map(item => `<option value="${item.sku}">${item.name} (Baki: ${item.stock})</option>`).join('');
@@ -31,7 +29,6 @@ export function renderBilling() {
             '<option value="">-- Pilih Pelanggan CRM --</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
     }
 
-    // 2. Render Jadual Billing
     if (billings.length === 0) {
         table.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-gray-300 font-bold uppercase text-[10px] tracking-widest">Tiada rekod billing</td></tr>`;
     } else {
@@ -44,11 +41,8 @@ export function renderBilling() {
                 <td class="p-6 font-black text-sm text-gray-700">${utils.formatRM(bill.total)}</td>
                 <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${theme.bg} ${theme.text}">${bill.type}</span></td>
                 <td class="p-6 text-right flex justify-end gap-2">
-                    <button onclick="shareWhatsApp(${index})" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all">
-                        <i class="fab fa-whatsapp text-[12px]"></i>
-                    </button>
                     <button onclick="printBill(${index})" class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
-                        <i class="fas fa-print text-[10px]"></i>
+                        <i class="fas fa-eye text-[10px]"></i>
                     </button>
                     <button onclick="askVoid(${index})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all">
                         <i class="fas fa-trash text-[10px]"></i>
@@ -58,7 +52,6 @@ export function renderBilling() {
         }).join('');
     }
 
-    // 3. Render Audit Log
     if(auditTable) {
         auditTable.innerHTML = auditLogs.map(log => `
             <tr class="border-b border-gray-50">
@@ -72,7 +65,120 @@ export function renderBilling() {
 }
 
 /**
- * LOGIK UTAMA: SAVE & AUTO-WHATSAPP
+ * MODUL PREVIEW & CETAK
+ */
+window.printBill = (index) => {
+    const bill = billings[index];
+    const theme = getBillTheme(bill.type);
+    const product = inventory.find(i => i.sku === bill.sku)?.name || "Produk/Servis";
+    
+    const previewModal = document.getElementById('preview-modal');
+    const previewContent = document.getElementById('preview-content');
+
+    // Suntikan UI Dark Mode ke dalam Preview
+    previewContent.innerHTML = `
+        <div class="space-y-8 animate-in fade-in zoom-in duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl font-black text-blue-400">KETICK OS</h2>
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Digital Business Solution</p>
+                </div>
+                <div class="text-right">
+                    <h1 class="text-3xl font-black text-white italic uppercase leading-none">${bill.type}</h1>
+                    <p class="text-[10px] text-blue-500 font-black mt-1 tracking-widest">#${bill.no}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 py-6 border-y border-white/5">
+                <div>
+                    <p class="text-[9px] font-black text-gray-500 uppercase mb-1">Diterbitkan Untuk:</p>
+                    <p class="font-bold text-sm text-white">${bill.client}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[9px] font-black text-gray-500 uppercase mb-1">Tarikh Dokumen:</p>
+                    <p class="font-bold text-sm text-white">${bill.date}</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-[9px] font-black text-gray-500 uppercase ml-1">Butiran Transaksi</p>
+                <div class="bg-white/5 p-5 rounded-[2rem] border border-white/5">
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1">
+                            <p class="font-bold text-white text-sm">${product}</p>
+                            <p class="text-[10px] text-gray-400 mt-1">${bill.qty} Unit x ${utils.formatRM(bill.price)}</p>
+                        </div>
+                        <p class="font-black text-lg text-white">${utils.formatRM(bill.total)}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-white/5 flex justify-between items-center">
+                <div>
+                    <p class="text-[9px] font-black text-gray-500 uppercase">Jumlah Bersih</p>
+                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest mt-1">Status: Paid & Verified</p>
+                </div>
+                <p class="text-4xl font-black text-emerald-400 tracking-tighter">${utils.formatRM(bill.total)}</p>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('btn-print-now').onclick = () => actualPrint(index);
+    document.getElementById('btn-wa-now').onclick = () => window.shareWhatsApp(index);
+
+    previewModal.classList.remove('hidden');
+};
+
+window.closePreview = () => {
+    document.getElementById('preview-modal').classList.add('hidden');
+};
+
+function actualPrint(index) {
+    const bill = billings[index];
+    const theme = getBillTheme(bill.type);
+    const product = inventory.find(i => i.sku === bill.sku)?.name || "Produk/Servis";
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>${bill.type} - ${bill.no}</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap');
+                body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-print-color-adjust: exact; }
+            </style>
+        </head>
+        <body class="p-10">
+            <div class="flex justify-between mb-10">
+                <h1 class="text-4xl font-black uppercase" style="color:${theme.color}">${bill.type}</h1>
+                <div class="text-right">
+                    <p class="text-xl font-bold">KETICK OS</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-widest">ID: #${bill.no}</p>
+                </div>
+            </div>
+            <div class="border-y border-gray-100 py-8 mb-10 grid grid-cols-2">
+                <div><p class="text-[10px] font-bold text-gray-400 uppercase">Pelanggan</p><p class="font-black">${bill.client}</p></div>
+                <div class="text-right"><p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh</p><p class="font-black">${bill.date}</p></div>
+            </div>
+            <table class="w-full mb-10">
+                <tr class="border-b-2 border-gray-50 text-[10px] font-bold text-gray-400 uppercase">
+                    <th class="text-left py-4">Deskripsi</th>
+                    <th class="text-right">Jumlah</th>
+                </tr>
+                <tr>
+                    <td class="py-6 font-bold">${product} (x${bill.qty})</td>
+                    <td class="text-right font-black text-xl">${utils.formatRM(bill.total)}</td>
+                </tr>
+            </table>
+            <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };</script>
+        </body>
+        </html>
+    `);
+}
+
+/**
+ * LOGIK SIMPAN & WHATSAPP
  */
 window.saveBilling = () => {
     const type = document.getElementById('bill-type').value;
@@ -105,19 +211,9 @@ window.saveBilling = () => {
     globalSave({ billings, inventory, auditLogs });
     renderBilling();
     toggleBillingModal(false);
-
-    // Automasi WhatsApp
-    const clientData = clients.find(c => c.name === clientName);
-    const phone = clientData ? clientData.phone : "";
-
-    setTimeout(() => {
-        if (!phone) {
-            const manualPhone = prompt(`Dokumen #${newBill.no} dijana. No. telefon ${clientName} tiada dalam CRM. Masukkan no. WhatsApp (cth: 60123456789):`);
-            if (manualPhone) sendWA(manualPhone, newBill);
-        } else {
-            sendWA(phone, newBill);
-        }
-    }, 500);
+    
+    // Terus tunjuk preview selepas save
+    setTimeout(() => window.printBill(0), 400);
 };
 
 window.shareWhatsApp = (index) => {
@@ -129,28 +225,15 @@ window.shareWhatsApp = (index) => {
         phone = prompt("Masukkan no. WhatsApp (cth: 60123456789):");
         if(!phone) return;
     }
-    sendWA(phone, bill);
-};
-
-function sendWA(phone, bill) {
+    
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     const finalPhone = cleanPhone.startsWith('6') ? cleanPhone : '6' + cleanPhone;
-    
-    const text = `*DOKUMEN ${bill.type.toUpperCase()} - KETICK OS*%0A%0A` +
-                 `Hai *${bill.client}*, berikut adalah butiran dokumen anda:%0A` +
-                 `--------------------------------%0A` +
-                 `No. Rujukan: #${bill.no}%0A` +
-                 `Tarikh: ${bill.date}%0A` +
-                 `Jumlah: *${utils.formatRM(bill.total)}*%0A` +
-                 `--------------------------------%0A` +
-                 `Terima kasih kerana berurusan dengan kami.`;
-
+    const text = `*DOKUMEN ${bill.type.toUpperCase()} - KETICK OS*%0A%0ANo: #${bill.no}%0APelanggan: ${bill.client}%0AJumlah: *${utils.formatRM(bill.total)}*%0A%0ATerima kasih!`;
     window.open(`https://wa.me/${finalPhone}?text=${text}`, '_blank');
-    addAuditLog("WHATSAPP SENT", `Dokumen #${bill.no} dihantar ke ${bill.client}`);
-}
+};
 
 /**
- * LOGIK VOID, PRINT & UTILITY
+ * LOGIK VOID & UTILITY
  */
 window.askVoid = (index) => {
     pendingVoidIndex = index;
@@ -165,7 +248,6 @@ window.closeVoidModal = () => {
 window.confirmVoid = () => {
     const passInput = document.getElementById('admin-password').value;
     if(passInput !== ADMIN_PASS) {
-        addAuditLog("CUBAN VOID GAGAL", `Pass salah untuk Bill #${billings[pendingVoidIndex].no}`);
         alert("Password Admin Salah!");
         return;
     }
@@ -179,9 +261,9 @@ window.confirmVoid = () => {
         }
     }
 
-    addAuditLog("VOID BERJAYA", `Bill #${bill.no} dipadam. Stok dipulangkan.`);
     billings.splice(pendingVoidIndex, 1);
     localStorage.setItem('ketick_billings', JSON.stringify(billings));
+    addAuditLog("VOID BERJAYA", `Bill #${bill.no} dipadam.`);
     
     globalSave({ billings, inventory, auditLogs });
     renderBilling();
@@ -209,9 +291,9 @@ function updateBillingSummary() {
 }
 
 function getBillTheme(type) {
-    if(type === 'Quotation') return { bg: 'bg-blue-50', text: 'text-blue-600', color: '#2563eb', label: 'SEBUT HARGA' };
-    if(type === 'Invoice') return { bg: 'bg-orange-50', text: 'text-orange-600', color: '#ea580c', label: 'INVOIS' };
-    return { bg: 'bg-emerald-50', text: 'text-emerald-600', color: '#10b981', label: 'RESIT RASMI' };
+    if(type === 'Quotation') return { bg: 'bg-blue-50', text: 'text-blue-600', color: '#2563eb' };
+    if(type === 'Invoice') return { bg: 'bg-orange-50', text: 'text-orange-600', color: '#ea580c' };
+    return { bg: 'bg-emerald-50', text: 'text-emerald-600', color: '#10b981' };
 }
 
 window.toggleBillingModal = (show) => {
@@ -220,67 +302,8 @@ window.toggleBillingModal = (show) => {
     if (show) {
         modal.classList.remove('hidden');
         setTimeout(() => content.classList.remove('translate-x-full'), 10);
-        renderBilling(); 
     } else {
         content.classList.add('translate-x-full');
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
-};
-
-window.printBill = (index) => {
-    const bill = billings[index];
-    const theme = getBillTheme(bill.type);
-    const product = inventory.find(i => i.sku === bill.sku)?.name || "Produk/Servis";
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>${bill.type} - ${bill.no}</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <style>
-                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap');
-                body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-print-color-adjust: exact; }
-                .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 8rem; font-weight: 900; color: rgba(0,0,0,0.02); z-index: -1; text-transform: uppercase; }
-            </style>
-        </head>
-        <body class="p-10">
-            <div class="watermark">${bill.type}</div>
-            <div class="flex justify-between mb-10">
-                <div>
-                    <h1 class="text-4xl font-black" style="color:${theme.color}">${theme.label}</h1>
-                    <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">ID: #${bill.no}</p>
-                </div>
-                <div class="text-right">
-                    <h2 class="text-xl font-black">KETICK OS</h2>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Mobile Cloud ERP</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-10 mb-10 border-y border-gray-100 py-8">
-                <div><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pelanggan</p><p class="font-bold text-gray-800">${bill.client}</p></div>
-                <div class="text-right"><p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tarikh</p><p class="font-bold text-gray-800">${bill.date}</p></div>
-            </div>
-            <table class="w-full mb-10">
-                <tr class="text-[10px] font-black text-gray-400 uppercase border-b-2 border-gray-50">
-                    <th class="text-left py-4">Perkara</th>
-                    <th class="text-center">Kuantiti</th>
-                    <th class="text-right">Jumlah</th>
-                </tr>
-                <tr>
-                    <td class="py-6 font-bold text-gray-800">${product}<br><span class="text-[9px] text-gray-400 uppercase font-medium">SKU: ${bill.sku}</span></td>
-                    <td class="text-center font-bold text-gray-600">${bill.qty}</td>
-                    <td class="text-right font-black text-lg" style="color:${theme.color}">${utils.formatRM(bill.total)}</td>
-                </tr>
-            </table>
-            <div class="flex justify-end pt-10 border-t border-gray-100">
-                <div class="text-right bg-gray-50 p-6 rounded-3xl w-64">
-                    <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Jumlah Bersih</p>
-                    <p class="text-3xl font-black text-gray-800">${utils.formatRM(bill.total)}</p>
-                </div>
-            </div>
-            <p class="text-[10px] text-gray-300 mt-20 italic">Generated by Ketick OS. Dokumentasi ini sah mengikut perundangan digital.</p>
-            <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };</script>
-        </body>
-        </html>
-    `);
 };
