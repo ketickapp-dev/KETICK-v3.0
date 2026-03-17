@@ -4,35 +4,34 @@ import { utils } from './utils.js';
 let billings = JSON.parse(localStorage.getItem('ketick_billings')) || [];
 let inventory = JSON.parse(localStorage.getItem('ketick_inventory')) || [];
 let clients = JSON.parse(localStorage.getItem('f6_clients')) || [];
+let auditLogs = JSON.parse(localStorage.getItem('ketick_audit_logs')) || [];
+
+const ADMIN_PASS = "1234"; 
+let pendingVoidIndex = null;
 
 export function renderBilling() {
     const table = document.getElementById('billing-table-body');
+    const auditTable = document.getElementById('billing-audit-log');
     const productSelect = document.getElementById('bill-product-select');
     const clientSelect = document.getElementById('bill-client-select');
     
     if(!table) return;
 
-    // Refresh data dari storage
+    // Refresh data
     inventory = JSON.parse(localStorage.getItem('ketick_inventory')) || [];
     clients = JSON.parse(localStorage.getItem('f6_clients')) || [];
 
-    // 1. Load Produk
+    // 1. Dropdowns
     if(productSelect) {
         productSelect.innerHTML = '<option value="">-- Pilih Produk --</option>' + 
             inventory.map(item => `<option value="${item.sku}">${item.name} (Baki: ${item.stock})</option>`).join('');
     }
-
-    // 2. Load Pelanggan dari CRM
     if(clientSelect) {
-        if(clients.length === 0) {
-            clientSelect.innerHTML = '<option value="">Tiada Data CRM</option>';
-        } else {
-            clientSelect.innerHTML = '<option value="">-- Pilih Pelanggan CRM --</option>' +
-                clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-        }
+        clientSelect.innerHTML = clients.length === 0 ? '<option value="">Tiada CRM</option>' :
+            '<option value="">-- Pilih Pelanggan CRM --</option>' + clients.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
     }
 
-    // 3. Render Jadual
+    // 2. Render Jadual Billing
     if (billings.length === 0) {
         table.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-gray-300 font-bold uppercase text-[10px] tracking-widest">Tiada rekod billing</td></tr>`;
     } else {
@@ -41,23 +40,26 @@ export function renderBilling() {
             return `
             <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
                 <td class="p-6 font-bold text-xs text-gray-400">#${bill.no}</td>
-                <td class="p-6">
-                    <p class="font-bold text-sm text-gray-800">${bill.client}</p>
-                    <p class="text-[9px] text-gray-400 font-medium">${bill.date}</p>
-                </td>
+                <td class="p-6 font-bold text-sm text-gray-800">${bill.client}<br><span class="text-[9px] text-gray-400 font-medium">${bill.date}</span></td>
                 <td class="p-6 font-black text-sm text-gray-700">${utils.formatRM(bill.total)}</td>
-                <td class="p-6">
-                    <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${theme.bg} ${theme.text}">
-                        ${bill.type}
-                    </span>
-                </td>
-                <td class="p-6 text-right">
-                    <button onclick="printBill(${index})" class="w-8 h-8 rounded-full bg-gray-50 text-blue-500 hover:bg-blue-600 hover:text-white transition-all active:scale-90">
-                        <i class="fas fa-print text-[10px]"></i>
-                    </button>
+                <td class="p-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${theme.bg} ${theme.text}">${bill.type}</span></td>
+                <td class="p-6 text-right flex justify-end gap-2">
+                    <button onclick="printBill(${index})" class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-print text-[10px]"></i></button>
+                    <button onclick="askVoid(${index})" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-[10px]"></i></button>
                 </td>
             </tr>`;
         }).join('');
+    }
+
+    // 3. Render Audit Log
+    if(auditTable) {
+        auditTable.innerHTML = auditLogs.map(log => `
+            <tr class="border-b border-gray-50">
+                <td class="p-4 text-gray-400">${log.time}</td>
+                <td class="p-4 font-bold ${log.action.includes('VOID') ? 'text-red-500' : 'text-orange-500'}">${log.action}</td>
+                <td class="p-4 text-gray-500">${log.details}</td>
+            </tr>
+        `).join('');
     }
     updateBillingSummary();
 }
@@ -69,12 +71,8 @@ window.saveBilling = () => {
     const qty = parseInt(document.getElementById('bill-qty').value);
     const price = parseFloat(document.getElementById('bill-price').value);
 
-    if (!client || !sku || !qty || !price) {
-        alert("Ralat: Sila pastikan Pelanggan, Produk, Kuantiti dan Harga telah diisi.");
-        return;
-    }
+    if (!client || !sku || !qty || !price) return alert("Sila lengkapkan maklumat!");
 
-    // Tolak stok jika Resit
     if (type === 'Receipt') {
         const itemIdx = inventory.findIndex(i => i.sku === sku);
         if (itemIdx > -1) {
@@ -86,21 +84,60 @@ window.saveBilling = () => {
 
     const newBill = {
         no: (type[0] + Date.now().toString().slice(-6)).toUpperCase(),
-        type, client, sku, qty, price,
-        total: qty * price,
+        type, client, sku, qty, price, total: qty * price,
         date: new Date().toLocaleDateString('ms-MY')
     };
 
     billings.unshift(newBill);
     localStorage.setItem('ketick_billings', JSON.stringify(billings));
+    addAuditLog("JANA DOKUMEN", `Berjaya jana ${type} #${newBill.no} untuk ${client}`);
     
-    // Simpan ke cloud
-    globalSave({ billings, inventory });
-    
+    globalSave({ billings, inventory, auditLogs });
     renderBilling();
     toggleBillingModal(false);
-    alert("Berjaya! Dokumen telah disimpan.");
 };
+
+window.askVoid = (index) => {
+    pendingVoidIndex = index;
+    document.getElementById('void-modal').classList.remove('hidden');
+};
+
+window.closeVoidModal = () => {
+    document.getElementById('void-modal').classList.add('hidden');
+    document.getElementById('admin-password').value = '';
+};
+
+window.confirmVoid = () => {
+    const passInput = document.getElementById('admin-password').value;
+    if(passInput !== ADMIN_PASS) {
+        addAuditLog("CUBAN VOID GAGAL", `Password salah semasa cuba padam Bill #${billings[pendingVoidIndex].no}`);
+        alert("Password Admin Salah!");
+        return;
+    }
+
+    const bill = billings[pendingVoidIndex];
+    if(bill.type === 'Receipt') {
+        const itemIdx = inventory.findIndex(i => i.sku === bill.sku);
+        if(itemIdx > -1) {
+            inventory[itemIdx].stock += bill.qty;
+            localStorage.setItem('ketick_inventory', JSON.stringify(inventory));
+        }
+    }
+
+    addAuditLog("VOID BERJAYA", `Bill #${bill.no} dipadam. Stok dipulangkan jika berkaitan.`);
+    billings.splice(pendingVoidIndex, 1);
+    localStorage.setItem('ketick_billings', JSON.stringify(billings));
+    
+    globalSave({ billings, inventory, auditLogs });
+    renderBilling();
+    closeVoidModal();
+};
+
+function addAuditLog(action, details) {
+    auditLogs.unshift({ time: new Date().toLocaleTimeString(), action, details });
+    if(auditLogs.length > 50) auditLogs.pop();
+    localStorage.setItem('ketick_audit_logs', JSON.stringify(auditLogs));
+}
 
 window.autoFillPrice = () => {
     const sku = document.getElementById('bill-product-select').value;
@@ -109,11 +146,10 @@ window.autoFillPrice = () => {
 };
 
 function updateBillingSummary() {
-    const totalPaid = billings.filter(b => b.type === 'Receipt').reduce((s, b) => s + b.total, 0);
-    const totalPending = billings.filter(b => b.type === 'Invoice').reduce((s, b) => s + b.total, 0);
-    
-    if(document.getElementById('bill-total-paid')) document.getElementById('bill-total-paid').innerText = utils.formatRM(totalPaid);
-    if(document.getElementById('bill-total-pending')) document.getElementById('bill-total-pending').innerText = utils.formatRM(totalPending);
+    const paid = billings.filter(b => b.type === 'Receipt').reduce((s, b) => s + b.total, 0);
+    const pending = billings.filter(b => b.type === 'Invoice').reduce((s, b) => s + b.total, 0);
+    if(document.getElementById('bill-total-paid')) document.getElementById('bill-total-paid').innerText = utils.formatRM(paid);
+    if(document.getElementById('bill-total-pending')) document.getElementById('bill-total-pending').innerText = utils.formatRM(pending);
     if(document.getElementById('bill-count')) document.getElementById('bill-count').innerText = billings.length;
 }
 
