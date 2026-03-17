@@ -1,8 +1,6 @@
-// js/inventory-logic.js
 import { utils } from './utils.js';
 import { globalSave } from './database.js';
 
-// Ambil data dari LocalStorage (Gunakan kunci yang konsisten: ketick_inventory)
 let inventory = JSON.parse(localStorage.getItem('ketick_inventory')) || [];
 
 export function renderInventory() {
@@ -15,13 +13,17 @@ export function renderInventory() {
     }
 
     table.innerHTML = inventory.map((item, index) => {
-        const isLowStock = item.stock <= 5;
+        // Logik amaran stok rendah berdasarkan input pengguna (default 5)
+        const isLowStock = item.stock <= (item.minAlert || 5);
         
         return `
         <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition group">
             <td class="p-6">
                 <p class="font-bold text-gray-800 text-sm">${utils.truncateText(item.name, 30)}</p>
-                <p class="text-[9px] font-black text-blue-500 uppercase tracking-tighter">${item.sku || 'NO-SKU'}</p>
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-black text-blue-500 uppercase tracking-tighter">${item.sku || 'NO-SKU'}</span>
+                    <span class="text-[8px] font-bold text-gray-300 uppercase italic">| ${item.category || 'Umum'}</span>
+                </div>
             </td>
             <td class="p-6 text-center font-bold text-xs text-gray-400">
                 ${utils.formatRM(item.cost)}
@@ -47,7 +49,6 @@ export function renderInventory() {
     }).join('');
 }
 
-// Kawalan Modal (Slide-over)
 window.toggleInventoryModal = (show) => {
     const modal = document.getElementById('inv-modal');
     const content = document.getElementById('modal-content');
@@ -61,34 +62,39 @@ window.toggleInventoryModal = (show) => {
     }
 };
 
-// Simpan Produk & Sync
 window.saveProduct = () => {
     const name = document.getElementById('inv-name').value;
+    const category = document.getElementById('inv-category').value;
+    const minAlert = document.getElementById('inv-min-alert').value;
     const cost = document.getElementById('inv-cost').value;
     const price = document.getElementById('inv-price').value;
     const stock = document.getElementById('inv-stock').value;
 
-    if (!name || !price || !stock) return alert("Sila lengkapkan maklumat produk.");
+    if (!name || !price || !stock) return alert("Sila isi sekurang-kurangnya Nama, Harga Jual dan Stok.");
 
     const newItem = {
         sku: 'INV-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
         name,
+        category,
+        minAlert: parseInt(minAlert) || 5,
         cost: parseFloat(cost) || 0,
         price: parseFloat(price) || 0,
         stock: parseInt(stock) || 0,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toLocaleDateString('ms-MY')
     };
 
     inventory.push(newItem);
     
-    // Simpan Local & Cloud
     localStorage.setItem('ketick_inventory', JSON.stringify(inventory));
-    if (typeof globalSave === "function") {
-        globalSave({ inventory: inventory });
-    }
+    if (typeof globalSave === "function") globalSave({ inventory: inventory });
 
-    // Reset UI
-    document.querySelectorAll('#inv-modal input').forEach(input => input.value = '');
+    // Reset Form
+    document.getElementById('inv-name').value = '';
+    document.getElementById('inv-min-alert').value = '';
+    document.getElementById('inv-cost').value = '';
+    document.getElementById('inv-price').value = '';
+    document.getElementById('inv-stock').value = '';
+    
     toggleInventoryModal(false);
     renderInventory();
 };
@@ -98,8 +104,6 @@ window.deleteProduct = (index) => {
     inventory.splice(index, 1);
     localStorage.setItem('ketick_inventory', JSON.stringify(inventory));
     
-    if (typeof globalSave === "function") {
-        globalSave({ inventory: inventory });
-    }
+    if (typeof globalSave === "function") globalSave({ inventory: inventory });
     renderInventory();
 };
